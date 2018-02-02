@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-touch testFile.txt
-echo "Foo\n" >> testFile.txt
+scp -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
