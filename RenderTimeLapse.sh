@@ -3,7 +3,8 @@
 function usage() {
   echo "Usage: $(basename ${0}) --(remote {unique name} | local {path}) [-h | --help]"
   echo ""
-  echo " --remote    - Fetch timelapse images from Raspberry Pi. 'unique name' referes to the name suffix of the Raspberry Pi"
+  echo " --remote    - Fetch timelapse images from Raspberry Pi."
+  echo "               'unique name' referes to the name suffix of the Raspberry Pi"
   echo "               remote assumes that the remote path is ~/TimeLapse/tl/"
   echo " --local     - Use locally stored timelapse images."
   echo " --help  -h  - View this page."
