@@ -12,7 +12,7 @@ function usage() {
 }
 
 function fetch_images() {
-  echo "INFO: Fetch images function called."
+  echo "INFO: Fetch images function called with target: $1"
 
   scp -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
   
@@ -42,6 +42,7 @@ function render() {
     echo "=--------------------------------------------------------------------------------------------------="
   	echo "ffmpeg does not exist in local directory."
   	echo "Download ffmpeg from https://www.ffmpeg.org/Download/ and extract the ffmpeg file to local location."
+    echo "The images will not be deleted."
     echo "=--------------------------------------------------------------------------------------------------="
   	exit 1
   fi
@@ -50,10 +51,7 @@ function render() {
   read -p "Do you want to remove ALL .jpeg images in the image directory after render complete? y/n: " removeOption
 
   #Render
-  cp ffmpeg $1/ffmpeg
-  $1/ffmpeg -r 20 -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
-  rm $1/ffmpeg
-  mv $1/video.mp4 ./video.mp4
+  ffmpeg -r 20 -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
 
   #Removing unneeded files (possibly)
   if [ "$removeOption" == "y" ] || [ "$removeOption" == "Y" ] || [ "$removeOption" == "yes" ] || [ "$removeOption" == "Yes" ]
