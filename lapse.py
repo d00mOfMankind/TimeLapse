@@ -64,7 +64,7 @@ while True:
 	now = datetime.datetime.now()
 	if now >= lastTime + datetime.timedelta(seconds = ti): #if it has been ti time since last image taken
 
-		imgLoc = "tl/" + "{0:0>4}".format(str(counter+1)) + ".jpeg"
+		imgLoc = "tl/image" + "{0:0>4}".format(str(counter+1)) + ".jpeg"
 		lastTime = now
 		counter+=1
 
