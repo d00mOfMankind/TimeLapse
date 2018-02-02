@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function usage() {
   echo "Usage: $(basename ${0}) --(fetch {unique name} | local {path}) [-h | --help]"
@@ -13,6 +13,7 @@ function usage() {
 function fetch_images() {
   echo "INFO: Fetch images function called."
 
+  ssh pi@raspberrypi-"$1" 'setup.sh' < SCRIPT
 
 }
 
@@ -43,7 +44,7 @@ function render() {
   fi
 
   #Does the user want to clean up afterwards
-  read -p "Do you want to remove ALL .jpeg images in the image directory y/n: " removeOption
+  read -p "Do you want to remove ALL .jpeg images in the image directory after render complete? y/n: " removeOption
 
   #Render
   cp ffmpeg $1/ffmpeg
