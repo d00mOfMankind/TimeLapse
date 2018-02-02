@@ -4,6 +4,7 @@ function usage() {
   echo "Usage: $(basename ${0}) --(fetch {unique name} | local {path}) [-h | --help]"
   echo ""
   echo " --fetch     - Fetch timelapse images from Raspberry Pi. 'Unique name' referes to the name suffix of the Raspberry Pi"
+  echo "               Fetch assumes that the remote path is ~/TimeLapse/tl/"
   echo " --local     - Use locally stored timelapse images."
   echo " --help  -h  - View this page."
   echo ""
@@ -13,7 +14,11 @@ function usage() {
 function fetch_images() {
   echo "INFO: Fetch images function called."
 
-  ssh pi@raspberrypi-"$1" 'setup.sh' < SCRIPT
+  scp -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
+  
+  IMAGE_PATH="./images"
+
+  render IMAGE_PATH
 
 }
 
@@ -77,13 +82,14 @@ while [[ $# -gt 0 ]]; do
       usage;;
     --fetch)
 			if [ -z "${2}" ]
-				then
-					echo "ERROR: (--fetch) Target not defined"
-					exit 1
-				else
-					UNIQUE_NAME=${2}
-					fetch_images $UNIQUE_NAME
-      shift;;
+			then
+				echo "ERROR: (--fetch) Target not defined"
+				exit 1
+			else
+				UNIQUE_NAME=${2}
+				fetch_images $UNIQUE_NAME
+      fi
+      shift 2;;
     --local)
       if [ -z "${2}" ]
       then
