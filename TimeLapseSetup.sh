@@ -11,7 +11,7 @@ function get_static_image() {
 
 function setup(){
 	echo "INFO: Setup function called."
-	#ssh pi@raspberrypi-"$1" 'bash -s' < setup.sh
+	#ssh pi@raspberrypi-$1 'bash -s' < setup.sh
 }
 
 
