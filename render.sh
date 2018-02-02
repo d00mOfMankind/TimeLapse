@@ -31,12 +31,13 @@ function render() {
   #Check if ffmpeg exists
   if [ ! -f ffmpeg ]
   then
-  	if [ -f ffmpeg.zip ]
+  	if [ -f ffmpeg.tar.xz ]
   	then
   		echo "Unzipping ffmpeg..."
-  		unzip ffmpeg.zip
+  		tar -xf ffmpeg.tar.xz
   	else
   		echo "ffmpeg does not exist in local directory."
+  		echo "Download from https://www.ffmpeg.org/Download/ and extract to local location"
   		exit 1
   	fi
   fi
