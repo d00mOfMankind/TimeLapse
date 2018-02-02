@@ -55,12 +55,13 @@ function render() {
   cp ffmpeg $1/ffmpeg
   $1/ffmpeg -r 20 -start_number 0001 -i "%%04d.jpeg" -s 1920x1080 -vcodec libx264 video.mp4
   rm $1/ffmpeg
+  mv $1/video.mp4 ./video.mp4
 
   #Removing unneeded files (possibly)
   if [ removeOption -eq "y" ] || [ removeOption -eq "Y" ] || [ removeOption -eq "yes" ] || [ removeOption -eq "Yes" ]
   then
   	echo "Cleaning up unneeded files..."
-  	rm $1/*.jpeg
+  	rm -r $1
   fi
 
 
