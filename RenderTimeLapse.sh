@@ -15,10 +15,6 @@ function fetch_images() {
   echo "INFO: Fetch images function called with target: $1"
 
   scp -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
-  
-  IMAGE_PATH="./images"
-
-  render $IMAGE_PATH
 
 }
 
@@ -65,7 +61,7 @@ function render() {
 }
 
 IMAGE_PATH="./images"
-UNIQUE_NAME="bane"
+UNIQUE_NAME=""
 
 if [[ $# -eq 0 ]]
 then
@@ -80,11 +76,12 @@ while [[ $# -gt 0 ]]; do
     --remote)
 			if [ -z "${2}" ]
 			then
-				echo "ERROR: (--remote) Target not defined"
+				echo "ERROR: (--remote) Target not defined."
 				exit 1
 			else
 				UNIQUE_NAME=${2}
 				fetch_images $UNIQUE_NAME
+        render $IMAGE_PATH
       fi
       shift 2;;
     --local)
@@ -98,7 +95,7 @@ while [[ $# -gt 0 ]]; do
           IMAGE_PATH=${2}
           render $IMAGE_PATH
         else
-          echo "ERROR: Path: ${2} Does not exist"
+          echo "ERROR: Path: ${2} Does not exist."
           exit 1
         fi
       fi
