@@ -18,7 +18,7 @@ function fetch_images() {
   
   IMAGE_PATH="./images"
 
-  render IMAGE_PATH
+  render $IMAGE_PATH
 
 }
 
@@ -51,18 +51,18 @@ function render() {
 
   #Render
   cp ffmpeg $1/ffmpeg
-  $1/ffmpeg -r 20 -start_number 0001 -i "%%04d.jpeg" -s 1920x1080 -vcodec libx264 video.mp4
+  $1/ffmpeg -r 20 -start_number 0001 -i '%%04d.jpeg' -s 1920x1080 -vcodec libx264 video.mp4
   rm $1/ffmpeg
   mv $1/video.mp4 ./video.mp4
 
   #Removing unneeded files (possibly)
-  if [ removeOption -eq "y" ] || [ removeOption -eq "Y" ] || [ removeOption -eq "yes" ] || [ removeOption -eq "Yes" ]
+  if [ "$removeOption" == "y" ] || [ "$removeOption" == "Y" ] || [ "$removeOption" == "yes" ] || [ "$removeOption" == "Yes" ]
   then
   	echo "Cleaning up unneeded files..."
   	rm -r $1
   fi
 
-
+  echo "INFO: Render complete."
 
 }
 
