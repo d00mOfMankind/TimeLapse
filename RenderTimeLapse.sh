@@ -3,11 +3,11 @@
 function usage() {
   echo "Usage: $(basename ${0}) --(remote {unique name} | local {path}) [-h | --help]"
   echo ""
-  echo " --remote    - Fetch timelapse images from Raspberry Pi."
-  echo "               'unique name' referes to the name suffix of the Raspberry Pi"
-  echo "               remote assumes that the remote path is ~/TimeLapse/tl/"
-  echo " --local     - Use locally stored timelapse images."
-  echo " --help  -h  - View this page."
+  echo " --remote             - Fetch timelapse images from Raspberry Pi."
+  echo "                        'unique name' referes to the name suffix of the Raspberry Pi"
+  echo "                        remote assumes that the remote path is ~/TimeLapse/tl/"
+  echo " --local              - Use locally stored timelapse images."
+  echo " --help       -h      - View this page."
   echo ""
   exit -1
 }
@@ -72,6 +72,7 @@ then
   exit 1
 fi
 
+#this is a redundant while loop... But will remain as example
 while [[ $# -gt 0 ]]; do
   case "${1}" in
     -h|--help)
