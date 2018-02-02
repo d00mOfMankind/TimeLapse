@@ -47,7 +47,7 @@ function render() {
   read -p "Do you want to remove ALL .jpeg images in the image directory after render complete? y/n: " removeOption
 
   #Render
-  ffmpeg -r 20 -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
+  ./ffmpeg -r 20 -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
 
   #Removing unneeded files (possibly)
   if [ "$removeOption" == "y" ] || [ "$removeOption" == "Y" ] || [ "$removeOption" == "yes" ] || [ "$removeOption" == "Yes" ]
