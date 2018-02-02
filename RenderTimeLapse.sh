@@ -63,7 +63,7 @@ function render() {
 
 }
 
-IMAGE_PATH="./images"
+IMAGE_PATH=""
 UNIQUE_NAME=""
 
 if [[ $# -eq 0 ]]
