@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 function usage() {
-  echo "Usage: $(basename ${0}) --(fetch {unique name} | local {path}) [-h | --help]"
+  echo "Usage: $(basename ${0}) --(remote {unique name} | local {path}) [-h | --help]"
   echo ""
-  echo " --fetch     - Fetch timelapse images from Raspberry Pi. 'Unique name' referes to the name suffix of the Raspberry Pi"
-  echo "               Fetch assumes that the remote path is ~/TimeLapse/tl/"
+  echo " --remote    - Fetch timelapse images from Raspberry Pi. 'unique name' referes to the name suffix of the Raspberry Pi"
+  echo "               remote assumes that the remote path is ~/TimeLapse/tl/"
   echo " --local     - Use locally stored timelapse images."
   echo " --help  -h  - View this page."
   echo ""
@@ -51,7 +51,7 @@ function render() {
 
   #Render
   cp ffmpeg $1/ffmpeg
-  $1/ffmpeg -r 20 -start_number 0001 -i "%04d.jpeg" -s 1920x1080 -vcodec libx264 video.mp4
+  $1/ffmpeg -r 20 -i image_%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
   rm $1/ffmpeg
   mv $1/video.mp4 ./video.mp4
 
@@ -79,10 +79,10 @@ while [[ $# -gt 0 ]]; do
   case "${1}" in
     -h|--help)
       usage;;
-    --fetch)
+    --remote)
 			if [ -z "${2}" ]
 			then
-				echo "ERROR: (--fetch) Target not defined"
+				echo "ERROR: (--remote) Target not defined"
 				exit 1
 			else
 				UNIQUE_NAME=${2}
