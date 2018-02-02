@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function usage() {
-  echo "Usage: $(basename ${0}) --(fetch {user@hostname} | local {path}) [-h | --help]"
+  echo "Usage: $(basename ${0}) --(fetch {unique name} | local {path}) [-h | --help]"
   echo ""
-  echo " --fetch     - Fetch timelapse images from Raspberry Pi."
+  echo " --fetch     - Fetch timelapse images from Raspberry Pi. 'Unique name' referes to the name suffix of the Raspberry Pi"
   echo " --local     - Use locally stored timelapse images."
   echo " --help  -h  - View this page."
   echo ""
@@ -61,7 +61,7 @@ function render() {
 }
 
 IMAGE_PATH="./images"
-SSH_KEY_PATH="~/.ssh/id_rsa"
+UNIQUE_NAME="bane"
 
 if [[ $# -eq 0 ]]
 then
@@ -79,13 +79,8 @@ while [[ $# -gt 0 ]]; do
 					echo "ERROR: (--fetch) Target not defined"
 					exit 1
 				else
-					
-
-
-
-
-      fetch_images $HOSTNAME $SSH_KEY_PATH
-      render $IMAGE_PATH
+					UNIQUE_NAME=${2}
+					fetch_images $UNIQUE_NAME
       shift;;
     --local)
       if [ -z "${2}" ]
