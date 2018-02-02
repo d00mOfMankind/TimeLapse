@@ -30,22 +30,20 @@ function render() {
   then
     echo "$1 has files in it. Continuing..."
   else
+    echo "=--------------------------------------------------------------------------------------------------="
     echo "$1 is empty."
+    echo "=--------------------------------------------------------------------------------------------------="
     exit 1
   fi
 
   #Check if ffmpeg exists
   if [ ! -f ffmpeg ]
   then
-  	if [ -f ffmpeg.tar.xz ]
-  	then
-  		echo "Unzipping ffmpeg..."
-  		tar -xf ffmpeg.tar.xz
-  	else
-  		echo "ffmpeg does not exist in local directory."
-  		echo "Download from https://www.ffmpeg.org/Download/ and extract to local location"
-  		exit 1
-  	fi
+    echo "=--------------------------------------------------------------------------------------------------="
+  	echo "ffmpeg does not exist in local directory."
+  	echo "Download ffmpeg from https://www.ffmpeg.org/Download/ and extract the ffmpeg file to local location."
+    echo "=--------------------------------------------------------------------------------------------------="
+  	exit 1
   fi
 
   #Does the user want to clean up afterwards
