@@ -53,10 +53,10 @@ function validation() {
 	fi
 
 	#hostname ping test
-	count=$(ping -c 1 raspberrypi-$2)
-	if [ "$count" == "0" ]
+	extcode=$(ping -c 1 raspberrypi-$2)
+	if [ "$extcode" == "0" ]
 	then
-		echo "ERROR: Host $2 unreachable."
+		echo "ERROR: Host raspberrypi-$2 unreachable."
 		exit 1
 	fi
 }
