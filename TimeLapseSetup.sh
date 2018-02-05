@@ -59,6 +59,9 @@ function validation() {
 		echo "ERROR: Host raspberrypi-$2 unreachable."
 		exit 1
 	fi
+
+	#connection test
+	
 }
 
 function get_static_image() {
@@ -132,6 +135,7 @@ function setup(){
 		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
 	else
 		echo "ERROR: Unknown folder status."
+		echo "     : This could be from an incorrect ssh key."
 		#echo "$FOLDER_STATUS"
 		exit 1
 	fi
