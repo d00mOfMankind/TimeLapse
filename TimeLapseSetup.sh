@@ -53,8 +53,10 @@ function validation() {
 	fi
 
 	#hostname ping test
-	if [ ! ping -c 1 raspberrypi-$2 &> /dev/null ]
+	if [ ping -c 1 raspberrypi-$2 &> /dev/null ]
 	then
+		:
+	else
 		echo "ERROR: Host $2 unreachable."
 		exit 1
 	fi
