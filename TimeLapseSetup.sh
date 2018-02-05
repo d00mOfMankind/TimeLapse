@@ -17,6 +17,31 @@ function usage() {
 	exit -1
 }
 
+function two_seconds() {
+	echo -ne "[>.........]"\r
+	sleep 0.2
+	echo -ne "[=>........]"\r
+	sleep 0.2
+	echo -ne "[==>.......]"\r
+	sleep 0.2
+	echo -ne "[===>......]"\r
+	sleep 0.2
+	echo -ne "[====>.....]"\r
+	sleep 0.2
+	echo -ne "[=====>....]"\r
+	sleep 0.2
+	echo -ne "[======>...]"\r
+	sleep 0.2
+	echo -ne "[=======>..]"\r
+	sleep 0.2
+	echo -ne "[========>.]"\r
+	sleep 0.2
+	echo -ne "[=========>]"\r
+	sleep 0.2
+	echo -ne "[==========]"\r
+
+}
+
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
 
@@ -25,33 +50,55 @@ function get_static_image() {
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
-	#if setup file exists remove it (we want to start fresh)
-	if [ -f ./bin/setup.sh ]
+	if [ -f ./bin/lapse.py ]
 	then
-		rm ./bin/setup.sh
+		echo "ERROR: lapse.py program does not exist in bin."
+		exit 1
 	fi
 
-	#create setup file
-	touch ./bin/setup.sh
+	FOLDER_STATUS="ssh -i ./bin/$4 pi@raspberrypi-$1 if [ -d ~/TimeLapse/tl ]; then echo \"deep\"; elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]; then echo \"shallow\"; elif [ ! -d ~/TimeLapse ]; then echo \"bare\"; fi"
 
-	#write to file
-	echo "
-	#!/usr/bin/env bash
-	if [ ! -d ~/TimeLapse ]
+	#if both folders exist
+	if [ "$FOLDER_STATUS" == "deep" ]
 	then
-		mkdir ~/TimeLapse
-		mkdir ~/TimeLapse/tl
-	elif [ ! -d ~/TimeLapse/tl ]
+		echo "STATUS: Deep folder status found. Continuing..."
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
+		NUMBER="ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 ~/TimeLapse/tl | wc -l"
+
+		if [ ! $NUMBER -eq 0 ]
+		then
+			echo "INFO: There are currently: $NUMBER images on $1"
+			echo "    : If you continue with this setup they will be permanently removed."
+			read -p "OPTION: Continue with this setup? y/n: " continueOption
+			if [ "$continueOption" == "n" ] || [ "$continueOption" == "N" ] || [ "$continueOption" == "no" ] || [ "$continueOption" == "No" ]
+			then
+				echo "STATUS: Cancelling setup..."
+				exit 1
+			fi
+			ssh -i ./bin/$4 pi@raspberrypi-$1 rm ~/TimeLapse/tl/*
+		fi
+
+	#if only top level folder exists
+	elif [ "$FOLDER_STATUS" == "shallow" ]
 	then
-		mkdir ~/TimeLapse/tl
+		echo "STATUS: Shallow folder status found. Continuing..."
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
+
+	#if no folders exist
+	elif [ "$FOLDER_STATUS" == "bare" ]
+	then
+		echo "STATUS: ~/TimeLapse not found on $1. Creating..."
+		ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir ~/TimeLapse
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
+	else
+		echo "ERROR: Unknown folder status."
+		echo "$FOLDER_STATUS"
+		exit 1
 	fi
 
-	" >> ./bin/setup.sh
-	ssh -i ./bin/$4 pi@raspberrypi-$1 'bash -s' < setup.sh
-
-	echo "There are currently:"
-	ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 ~/TimeLapse/tl | wc -l
-	echo "images on $1"
+	echo "STATUS: Setting up program..."
+	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup ~/TimeLapse/lapse.py $2 $3 &
+	two_seconds
 
 }
 
