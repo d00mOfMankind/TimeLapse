@@ -1,5 +1,0 @@
-Step 1: User runs setup on local machine
-Step 2: Program starts python script on pi
-Step 3: Program reports status of running script to user
-Step 4: Program closes, User waits for end time
-Step 5: User runs render with download included, OR user downloads files manually and gives them to the program
