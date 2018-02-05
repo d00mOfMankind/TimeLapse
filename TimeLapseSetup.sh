@@ -53,11 +53,9 @@ function validation() {
 	fi
 
 	#hostname ping test
-	count=$(ping -c 1 raspberrypi-$2 | grep icmp* | wc -l)
-	if [ $count -eq 0 ]
+	count=$(ping -c 1 raspberrypi-$2)
+	if [ "$count" == "0" ]
 	then
-		:
-	else
 		echo "ERROR: Host $2 unreachable."
 		exit 1
 	fi
