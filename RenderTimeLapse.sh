@@ -29,29 +29,25 @@ function render() {
   #Check if directory is empty
   if [ "$(ls -A $1)" ]
   then
-    echo "$1 has files in it. Continuing..."
+    echo "STATUS: $1 has files in it. Continuing..."
   else
-    echo "=--------------------------------------------------------------------------------------------------="
-    echo "$1 is empty."
-    echo "=--------------------------------------------------------------------------------------------------="
+    echo "ERROR: $1 is empty."
     exit 1
   fi
 
   #Check if ffmpeg exists
   if [ ! -f ffmpeg ]
   then
-    echo "=--------------------------------------------------------------------------------------------------="
-  	echo "ffmpeg does not exist in local directory."
-  	echo "Download ffmpeg from https://www.ffmpeg.org/Download/ and extract the ffmpeg file to local location."
-    echo "The images will not be deleted."
-    echo "=--------------------------------------------------------------------------------------------------="
+  	echo "ERROR: ffmpeg does not exist in local directory."
+  	echo "     : Download ffmpeg from https://www.ffmpeg.org/Download/ and extract the ffmpeg file to local location."
+    echo "     : The images will not be deleted."
   	exit 1
   fi
 
 
   #Does the user want to clean up afterwards
-  read -p "Do you want to remove ALL files in the image directory after render complete? y/n: " removeOption
-  read -p "What framerate do you want in the output video? : " fps 
+  read -p "OPTION: Do you want to remove ALL files in the image directory after render complete? y/n: " removeOption
+  read -p "OPTION: What framerate do you want in the output video? : " fps 
 
   #Render
   ./ffmpeg -r $fps -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
@@ -59,7 +55,7 @@ function render() {
   #Removing unneeded files (possibly)
   if [ "$removeOption" == "y" ] || [ "$removeOption" == "Y" ] || [ "$removeOption" == "yes" ] || [ "$removeOption" == "Yes" ]
   then
-  	echo "Cleaning up unneeded files..."
+  	echo "STATUS: Cleaning up unneeded files..."
   	rm -r $1
   fi
 
