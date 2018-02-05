@@ -53,7 +53,7 @@ function validation() {
 	fi
 
 	#hostname ping test
-	count=$( ping -c 1 $target | grep icmp* | wc -l )
+	count=$( ping -c 1 raspberrypi-$2 | grep icmp* | wc -l )
 	if [ $count -eq 0 ]
 	then
 		:
