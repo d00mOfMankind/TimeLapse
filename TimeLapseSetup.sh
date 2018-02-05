@@ -61,7 +61,7 @@ function cancel_running_lapse() {
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
-	if [ -f ./bin/lapse.py ]
+	if [ ! -f ./bin/lapse.py ]
 	then
 		echo "ERROR: lapse.py program does not exist in bin."
 		exit 1
