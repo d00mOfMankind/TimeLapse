@@ -218,7 +218,7 @@ while [[ $# -gt 0 ]]; do
 			then
 				echo "ERROR: (--key) ssh key not defined."
 				exit 1
-			elif [ -f "./bin/${2}" ]
+			elif [ ! -f "./bin/${2}" ]
       then
         echo "ERROR: Key: ./bin/${2} does not exist."
         exit 1
