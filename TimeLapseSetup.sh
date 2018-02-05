@@ -43,25 +43,35 @@ function load_ani() {
 
 }
 
+# var1 = sshkey, var2 = hostname
+function validation() {
+	#key name check
+	if [ "$1" == "" ]
+	then
+		echo "ERROR: (--key) ssh key not defined."
+		exit 1
+	fi
+
+	#hostname ping test
+	ping_test="ping -c 1 raspberrypi-$2"
+	if [ ! $ping_test -eq 0 ]
+	then
+		echo "ERROR: Host $2 unreachable."
+		exit 1
+	fi
+}
+
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
 
-	if [ "$2" == "" ]
-	then
-		echo "ERROR: ssh key not defined."
-		exit 1
-	fi
+	validation $2 $1
 
 }
 
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
 
-	if [ "$2" == "" ]
-	then
-		echo "ERROR: ssh key not defined."
-		exit 1
-	fi
+	validation $2 $1
 
 
 }
@@ -69,22 +79,14 @@ function get_update() {
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
 
-	if [ "$2" == "" ]
-	then
-		echo "ERROR: ssh key not defined."
-		exit 1
-	fi
+	validation $2 $1
 
 }
 
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
-	if [ "$4" == "" ]
-	then
-		echo "ERROR: ssh key not defined."
-		exit 1
-	fi
+	validation $4 $1
 
 	if [ ! -f ./bin/lapse.py ]
 	then
@@ -101,16 +103,18 @@ function setup(){
 		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
 		NUMBER="ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 ~/TimeLapse/tl | wc -l"
 
+		#if there are images
 		if [ ! $NUMBER -eq 0 ]
 		then
 			echo "INFO: There are currently: $NUMBER images on $1"
 			echo "    : If you continue with this setup they will be permanently removed."
-			read -p "OPTION: Continue with this setup? y/n: " continueOption
-			if [ "$continueOption" == "n" ] || [ "$continueOption" == "N" ] || [ "$continueOption" == "no" ] || [ "$continueOption" == "No" ]
+			read -p "OPTION: Continue with this setup? y/n: " continue_option
+			if [ "$continue_option" == "n" ] || [ "$continue_option" == "N" ] || [ "$continue_option" == "no" ] || [ "$continue_option" == "No" ]
 			then
 				echo "STATUS: Cancelling setup..."
 				exit 1
 			fi
+			#remove all files
 			ssh -i ./bin/$4 pi@raspberrypi-$1 rm ~/TimeLapse/tl/*
 		fi
 
@@ -128,7 +132,7 @@ function setup(){
 		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
 	else
 		echo "ERROR: Unknown folder status."
-		echo "$FOLDER_STATUS"
+		#echo "$FOLDER_STATUS"
 		exit 1
 	fi
 
