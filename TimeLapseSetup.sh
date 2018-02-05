@@ -56,12 +56,19 @@ function validation() {
 	extcode=$(ping -c 1 raspberrypi-$2)
 	if [ "$extcode" == "0" ]
 	then
-		echo "ERROR: Host raspberrypi-$2 unreachable."
+		echo "ERROR: Host raspberrypi-$2 unreachable/offline."
 		exit 1
 	fi
 
 	#connection test
-	
+	extcode=$(ssh -i ~/projects/TimeLapse/bin/pi-ssh-key pi@raspberrypi-bane echo "ssh connection test")
+	if [ "$extcode" == "ssh connection test" ]
+	then
+	  :
+	else
+	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$2"
+	  echo "     : Most probable cause, wrong ssh key used."
+	fi
 }
 
 function get_static_image() {
