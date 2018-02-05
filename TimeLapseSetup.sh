@@ -198,7 +198,7 @@ then
 	setup $UNIQUE_NAME TIME_INTERVAL NUMBER_OF_IMAGES KEY_NAME
 elif [ "$TOGGLE" == "view" ]
 then
-	get_static_image $UNIQUE_NAME KEY_NAME
+	get_static_image $UNIQUE_NAME $KEY_NAME
 else
 	echo "FATAL: No mode selected."
 	usage
