@@ -51,7 +51,7 @@ outputFile.write("Start time       : " + str(startTime) + "\n")
 outputFile.write("Run time         : " + calcRunTime + "\n") #how long the program will run for
 outputFile.write("End time         : " + str(endTime) + "\n") #the time that the program will end
 outputFile.close()
-print("Start time       : " + str(startTime) + "\nRun time         : " + calcRunTime + "\nEnd time         : " + str(endTime) + "\n")
+#print("Start time       : " + str(startTime) + "\nRun time         : " + calcRunTime + "\nEnd time         : " + str(endTime) + "\n")
 
 #start main loop
 #MAKE SURE TO ACCOUNT FOR COMPUTE TIME BETWEEN IMAGES

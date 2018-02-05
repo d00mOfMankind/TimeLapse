@@ -187,7 +187,7 @@ function setup(){
 	load_ani
 	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/TimeLapse/output.txt ./bin/output.txt
 
-	cat output.txt
+	cat ./bin/output.txt
 
 
 }
