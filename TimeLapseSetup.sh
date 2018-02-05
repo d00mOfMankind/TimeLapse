@@ -147,8 +147,8 @@ while [[ $# -gt 0 ]]; do
 			else
 				UNIQUE_NAME=${2}
 				TOGGLE="view"
-				shift 2
 			fi
+			shift 2
 		--start)
 			if [ -z "${2}" ]
 			then
@@ -167,8 +167,8 @@ while [[ $# -gt 0 ]]; do
 				TIME_INTERVAL=${3}
 				NUMBER_OF_IMAGES=${4}
 				TOGGLE="start"
-				shift 4
 			fi
+			shift 4
 		--key)
 			if [ -z "${2}" ]
 			then
@@ -180,7 +180,8 @@ while [[ $# -gt 0 ]]; do
         exit 1
       else
       	KEY_NAME=${2}
-      	shift 2
+      fi
+      shift 2
 		*)
 			echo "FATAL: Unknown command-line argument or enviroment: ${1}"
 			exit 1
