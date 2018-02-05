@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-code=$(ssh -i ~/projects/TimeLapse/bin/pi-ssh-key pi@raspberrypi-bane touch echo "foo")
+code=$(ssh -i ~/projects/TimeLapse/bin/pi-ssh-key pi@raspberrypi-bane echo "foo")
 if [ "$code" == "0" ]
 then
   echo "Code == 0"
