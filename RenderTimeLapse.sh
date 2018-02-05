@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 function usage() {
-  echo "Usage: $(basename ${0}) --(remote {unique name} | local {path}) [-h | --help]"
+  echo "Usage: $(basename ${0}) --(remote {unique name} {ssh key name} | local {path}) [-h | --help]"
+  echo ""
+  echo "   Example:   $(basename ${0}) --remote maleficent my-private-key"
   echo ""
   echo " --remote             - Fetch timelapse images from Raspberry Pi."
-  echo "                        'unique name' referes to the name suffix of the Raspberry Pi"
+  echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
   echo "                        remote assumes that the remote path is ~/TimeLapse/tl/"
+  echo "                        'ssh key name' is the name of the ssh private key that the program."
+  echo "                        will attempt to connect with. This should be placed in ./bin"
   echo " --local              - Use locally stored timelapse images."
   echo " --help       -h      - View this page."
   echo ""
@@ -65,6 +69,7 @@ function render() {
 
 IMAGE_PATH=""
 UNIQUE_NAME=""
+KEY_NAME=""
 
 if [[ $# -eq 0 ]]
 then
@@ -82,7 +87,15 @@ while [[ $# -gt 0 ]]; do
 			then
 				echo "ERROR: (--remote) Target not defined."
 				exit 1
+      elif [ -z "${3}" ]
+      then
+        echo "ERROR: (--remote) ssh key not defined."
+        exit 1
 			else
+        if [ -f "${3}" ]
+        then
+          echo "ERROR: Key: ${3} does not exist."
+        fi
 				UNIQUE_NAME=${2}
 				fetch_images $UNIQUE_NAME
         render $IMAGE_PATH
@@ -99,7 +112,7 @@ while [[ $# -gt 0 ]]; do
           IMAGE_PATH=${2}
           render $IMAGE_PATH
         else
-          echo "ERROR: Path: ${2} Does not exist."
+          echo "ERROR: Path: ${2} does not exist."
           exit 1
         fi
       fi
