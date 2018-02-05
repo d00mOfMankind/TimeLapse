@@ -58,13 +58,15 @@ function validation() {
 	then
 		echo "ERROR: Host raspberrypi-$2 unreachable/offline."
 		exit 1
+	else
+		echo "INFO: Host raspberrypi-$2 online."
 	fi
 
 	#connection test
 	extcode=$(ssh -i ./bin/$1 pi@raspberrypi-$2 echo "ssh connection test")
 	if [ "$extcode" == "ssh connection test" ]
 	then
-	  :
+	  echo "INFO: Connection to raspberrypi-$2 established."
 	else
 	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$2"
 	  echo "     : Most probable cause, wrong ssh key used."
