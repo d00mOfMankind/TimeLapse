@@ -201,5 +201,5 @@ then
 	get_static_image $UNIQUE_NAME KEY_NAME
 else
 	echo "FATAL: No mode selected."
-	usage;;
+	usage
 fi
