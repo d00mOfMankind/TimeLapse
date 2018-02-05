@@ -77,7 +77,8 @@ fi
 
 case "${1}" in
   -h|--help)
-    usage;;
+    usage
+    ;;
   --remote)
 		if [ -z "${2}" ]
 		then
