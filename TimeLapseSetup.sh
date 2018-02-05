@@ -49,10 +49,12 @@ function get_static_image() {
 }
 
 function get_update() {
-
+	echo "INFO: Get update called with target: $1  ssh key: $2"
 }
 
-function 
+function cancel_running_lapse() {
+	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
+}
 
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
