@@ -17,9 +17,9 @@ function usage() {
 }
 
 function fetch_images() {
-  echo "INFO: Fetch images function called with target: $1"
+  echo "INFO: Fetch images function called with target: $1  Keyname: $2"
 
-  scp -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
+  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
 
 }
 
@@ -92,12 +92,13 @@ while [[ $# -gt 0 ]]; do
         echo "ERROR: (--remote) ssh key not defined."
         exit 1
 			else
-        if [ -f "${3}" ]
+        if [ -f "./bin/${3}" ]
         then
-          echo "ERROR: Key: ${3} does not exist."
+          echo "ERROR: Key: ./bin/${3} does not exist."
         fi
 				UNIQUE_NAME=${2}
-				fetch_images $UNIQUE_NAME
+        KEY_NAME=${3}
+				fetch_images $UNIQUE_NAME $KEY_NAME
         render $IMAGE_PATH
       fi
       shift 2;;
