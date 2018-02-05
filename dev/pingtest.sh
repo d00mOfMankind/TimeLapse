@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
-count=$(ping -c 1 raspberrypi-bane | grep icmp* | wc -l)
-echo $count
+code=$(ssh -i ./bin/pi-ssh-key pi@raspberrypi-bane)
+if [ "$code" == "0" ]
+then
+  echo "Connection"
+else
+  echo "No connection"
+fi
