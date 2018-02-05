@@ -74,49 +74,46 @@ then
 fi
 
 #this is a redundant while loop... But will remain as example
-while [[ $# -gt 0 ]]; do
-  case "${1}" in
-    -h|--help)
-      usage;;
-    --remote)
-			if [ -z "${2}" ]
-			then
-				echo "ERROR: (--remote) Target not defined."
-				exit 1
-      elif [ -z "${3}" ]
-      then
-        echo "ERROR: (--remote) ssh key not defined."
-        exit 1
-			else
-        if [ -f "./bin/${3}" ]
-        then
-          echo "ERROR: Key: ./bin/${3} does not exist."
-        fi
-				UNIQUE_NAME=${2}
-        KEY_NAME=${3}
-        IMAGE_PATH="./images"
-				fetch_images $UNIQUE_NAME $KEY_NAME
-        render $IMAGE_PATH
-      fi
-      shift 2;;
-    --local)
-      if [ -z "${2}" ]
-      then
-        echo "ERROR: (--local) Path not defined."
-        exit 1
-      else
-        if [ -d ${2} ]
-        then
-          IMAGE_PATH=${2}
-          render $IMAGE_PATH
-        else
-          echo "ERROR: Path: ${2} does not exist."
-          exit 1
-        fi
-      fi
-      shift 2;;
-    *)
-      echo "FATAL: Unknown command-line argument or environment: ${1}"
+
+case "${1}" in
+  -h|--help)
+    usage;;
+  --remote)
+		if [ -z "${2}" ]
+		then
+			echo "ERROR: (--remote) Target not defined."
+			exit 1
+    elif [ -z "${3}" ]
+    then
+      echo "ERROR: (--remote) ssh key not defined."
       exit 1
-  esac
-done
+		else
+      if [ -f "./bin/${3}" ]
+      then
+        echo "ERROR: Key: ./bin/${3} does not exist."
+      fi
+			UNIQUE_NAME=${2}
+      KEY_NAME=${3}
+      IMAGE_PATH="./images"
+			fetch_images $UNIQUE_NAME $KEY_NAME
+      render $IMAGE_PATH
+    fi
+  --local)
+    if [ -z "${2}" ]
+    then
+      echo "ERROR: (--local) Path not defined."
+      exit 1
+    else
+      if [ -d ${2} ]
+      then
+        IMAGE_PATH=${2}
+        render $IMAGE_PATH
+      else
+        echo "ERROR: Path: ${2} does not exist."
+        exit 1
+      fi
+    fi
+  *)
+    echo "FATAL: Unknown command-line argument or environment: ${1}"
+    exit 1
+esac
