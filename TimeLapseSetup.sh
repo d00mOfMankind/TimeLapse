@@ -107,7 +107,7 @@ function setup(){
 		exit 1
 	fi
 
-	FOLDER_STATUS="ssh -i ./bin/$4 pi@raspberrypi-$1 if [ -d ~/TimeLapse/tl ]; then echo \"deep\"; elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]; then echo \"shallow\"; elif [ ! -d ~/TimeLapse ]; then echo \"bare\"; fi"
+	FOLDER_STATUS=$(ssh -i ./bin/$4 pi@raspberrypi-$1 if [ -d ~/TimeLapse/tl ]; then echo \"deep\"; elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]; then echo \"shallow\"; elif [ ! -d ~/TimeLapse ]; then echo \"bare\"; fi)
 
 	#if both folders exist
 	if [ "$FOLDER_STATUS" == "deep" ]
