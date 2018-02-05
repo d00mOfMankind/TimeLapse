@@ -46,7 +46,7 @@ function load_ani() {
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
 
-	if [ $2 == "" ]
+	if [ "$2" == "" ]
 	then
 		echo "ERROR: ssh key not defined."
 		exit 1
@@ -57,7 +57,7 @@ function get_static_image() {
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
 
-	if [ $2 == "" ]
+	if [ "$2" == "" ]
 	then
 		echo "ERROR: ssh key not defined."
 		exit 1
@@ -69,7 +69,7 @@ function get_update() {
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
 
-	if [ $2 == "" ]
+	if [ "$2" == "" ]
 	then
 		echo "ERROR: ssh key not defined."
 		exit 1
@@ -80,7 +80,7 @@ function cancel_running_lapse() {
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
-	if [ $4 == "" ]
+	if [ "$4" == "" ]
 	then
 		echo "ERROR: ssh key not defined."
 		exit 1
