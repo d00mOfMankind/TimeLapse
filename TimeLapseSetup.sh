@@ -4,7 +4,7 @@ function usage() {
 	echo "Usage: $(basename ${0}) --(viewtest {unique name} | start {unique name} {time interval} {number of images}"
 	echo "                        --key {ssh key name})"
 	echo ""
-	echo "   Example:   $(basename ${0}) --viewtest maleficent --key my-private-key"
+	echo "   Examples:   $(basename ${0}) --viewtest maleficent --key my-private-key"
 	echo ""
 	echo " --viewtest           - Get a single image from the remote camera to test the view."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
@@ -17,28 +17,29 @@ function usage() {
 	exit -1
 }
 
-function two_seconds() {
-	echo -ne "[>.........]"\r
-	sleep 0.2
-	echo -ne "[=>........]"\r
-	sleep 0.2
-	echo -ne "[==>.......]"\r
-	sleep 0.2
-	echo -ne "[===>......]"\r
-	sleep 0.2
-	echo -ne "[====>.....]"\r
-	sleep 0.2
-	echo -ne "[=====>....]"\r
-	sleep 0.2
-	echo -ne "[======>...]"\r
-	sleep 0.2
-	echo -ne "[=======>..]"\r
-	sleep 0.2
-	echo -ne "[========>.]"\r
-	sleep 0.2
-	echo -ne "[=========>]"\r
-	sleep 0.2
-	echo -ne "[==========]"\r
+function load_ani() {
+	echo -ne "[>.........]"\\r
+	sleep 0.5
+	echo -ne "[=>........]"\\r
+	sleep 0.5
+	echo -ne "[==>.......]"\\r
+	sleep 0.5
+	echo -ne "[===>......]"\\r
+	sleep 0.5
+	echo -ne "[====>.....]"\\r
+	sleep 0.5
+	echo -ne "[=====>....]"\\r
+	sleep 0.5
+	echo -ne "[======>...]"\\r
+	sleep 0.5
+	echo -ne "[=======>..]"\\r
+	sleep 0.5
+	echo -ne "[========>.]"\\r
+	sleep 0.5
+	echo -ne "[=========>]"\\r
+	sleep 0.5
+	echo -ne "[==========]"\\r
+	echo ""
 
 }
 
@@ -46,6 +47,12 @@ function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
 
 }
+
+function get_update() {
+
+}
+
+function 
 
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
@@ -98,7 +105,16 @@ function setup(){
 
 	echo "STATUS: Setting up program..."
 	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup ~/TimeLapse/lapse.py $2 $3 &
-	two_seconds
+	if [ -f ./bin/output.txt ]
+	then
+		rm ./bin/output.txt
+	fi
+
+	load_ani
+	scp -i ./bin/$4 pi@raspberrypi-$1:~/TimeLapse/output.txt ./bin/output.txt
+
+	cat output.txt
+
 
 }
 

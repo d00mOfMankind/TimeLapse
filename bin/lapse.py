@@ -77,5 +77,5 @@ while True:
 		break
 
 outputFile = open("output.txt", "a")
-outputFile.write("fin\n")
+outputFile.write("Program has now completed.\nfin")
 outputFile.close()
