@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-echo -n "[>.........]"
+echo -ne "[>.........]"\r
 sleep 0.2
-echo -n "[=>........]"
+echo -ne "[=>........]"\r
 sleep 0.2
-echo -n "[==>.......]"
+echo -ne "[==>.......]"\r
 sleep 0.2
-echo -n "[===>......]"
+echo -ne "[===>......]"\r
 sleep 0.2
-echo -n "[====>.....]"
+echo -ne "[====>.....]"\r
 sleep 0.2
-echo -n "[=====>....]"
+echo -ne "[=====>....]"\r
 sleep 0.2
-echo -n "[======>...]"
+echo -ne "[======>...]"\r
 sleep 0.2
-echo -n "[=======>..]"
+echo -ne "[=======>..]"\r
 sleep 0.2
-echo -n "[========>.]"
+echo -ne "[========>.]"\r
 sleep 0.2
-echo -n "[=========>]"
+echo -ne "[=========>]"\r
 sleep 0.2
-echo -n "[==========]"
+echo -ne "[==========]"\r
