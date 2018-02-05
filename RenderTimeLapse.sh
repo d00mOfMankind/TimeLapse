@@ -46,14 +46,14 @@ function render() {
 
 
   #Does the user want to clean up afterwards
-  read -p "OPTION: Do you want to remove ALL files in the image directory after render complete? y/n: " removeOption
+  read -p "OPTION: Do you want to remove ALL files in the image directory after render complete? y/n: " remove_option
   read -p "OPTION: What framerate do you want in the output video? : " fps 
 
   #Render
   ./ffmpeg -r $fps -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
 
   #Removing unneeded files (possibly)
-  if [ "$removeOption" == "y" ] || [ "$removeOption" == "Y" ] || [ "$removeOption" == "yes" ] || [ "$removeOption" == "Yes" ]
+  if [ "$remove_option" == "y" ] || [ "$remove_option" == "Y" ] || [ "$remove_option" == "yes" ] || [ "$remove_option" == "Yes" ]
   then
   	echo "STATUS: Cleaning up unneeded files..."
   	rm -r $1
