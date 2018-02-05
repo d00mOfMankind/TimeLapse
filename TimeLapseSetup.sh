@@ -146,7 +146,7 @@ function setup(){
 	else
 		echo "ERROR: Unknown folder status."
 		echo "     : This could be from an incorrect ssh key."
-		#echo "$FOLDER_STATUS"
+		echo "$FOLDER_STATUS"
 		exit 1
 	fi
 
