@@ -149,6 +149,7 @@ while [[ $# -gt 0 ]]; do
 				TOGGLE="view"
 			fi
 			shift 2
+			;;
 		--start)
 			if [ -z "${2}" ]
 			then
@@ -169,6 +170,7 @@ while [[ $# -gt 0 ]]; do
 				TOGGLE="start"
 			fi
 			shift 4
+			;;
 		--key)
 			if [ -z "${2}" ]
 			then
@@ -182,9 +184,11 @@ while [[ $# -gt 0 ]]; do
       	KEY_NAME=${2}
       fi
       shift 2
+      ;;
 		*)
 			echo "FATAL: Unknown command-line argument or enviroment: ${1}"
 			exit 1
+			;;
 	esac
 done
 

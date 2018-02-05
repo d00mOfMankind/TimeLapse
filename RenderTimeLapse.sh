@@ -98,6 +98,7 @@ case "${1}" in
 			fetch_images $UNIQUE_NAME $KEY_NAME
       render $IMAGE_PATH
     fi
+    ;;
   --local)
     if [ -z "${2}" ]
     then
@@ -113,7 +114,9 @@ case "${1}" in
         exit 1
       fi
     fi
+    ;;
   *)
     echo "FATAL: Unknown command-line argument or environment: ${1}"
     exit 1
+    ;;
 esac
