@@ -138,7 +138,8 @@ fi
 while [[ $# -gt 0 ]]; do
 	case "${1}" in
 	  -h|--help)
-			usage;;
+			usage
+			;;
 		--viewtest)
 			if [ -z "${2}" ]
 			then
