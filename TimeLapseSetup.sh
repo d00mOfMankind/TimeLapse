@@ -18,17 +18,12 @@ function usage() {
 }
 
 function get_static_image() {
-	echo "INFO: Take test picture function called."
+	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
+
 }
 
 function setup(){
-	echo "INFO: Setup function called."
-
-	#if bin does not exist create it
-	if [ ! -d ./bin ]
-	then
-		mkdir ./bin
-	fi
+	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
 	#if setup file exists remove it (we want to start fresh)
 	if [ -f ./bin/setup.sh ]
@@ -40,26 +35,24 @@ function setup(){
 	touch ./bin/setup.sh
 
 	#write to file
-	echo "#!/usr/bin/env bash
+	echo "
+	#!/usr/bin/env bash
 	if [ ! -d ~/TimeLapse ]
 	then
 		mkdir ~/TimeLapse
-	fi
-
-	if [ ! -f ~/TimeLapse/lapse.py ]
+		mkdir ~/TimeLapse/tl
+	elif [ ! -d ~/TimeLapse/tl ]
 	then
-		rm ~/TimeLapse/lapse.py
-		wget https://raw.githubusercontent.com/d00mOfMankind/TimeLapse/master/bin/lapse.py
-		mv lapse.py ~/TimeLapse/lapse.py
+		mkdir ~/TimeLapse/tl
 	fi
-
 
 	" >> ./bin/setup.sh
-	#look here to continue
-	#http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html
+	ssh -i ./bin/$4 pi@raspberrypi-$1 'bash -s' < setup.sh
 
+	echo "There are currently:"
+	ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 ~/TimeLapse/tl | wc -l
+	echo "images on $1"
 
-	#ssh pi@raspberrypi-$1 'bash -s' < setup.sh
 }
 
 
@@ -129,11 +122,11 @@ done
 
 if [ "$TOGGLE" == "start" ]
 then
-	setup $UNIQUE_NAME TIME_INTERVAL NUMBER_OF_IMAGES
+	setup $UNIQUE_NAME TIME_INTERVAL NUMBER_OF_IMAGES KEY_NAME
 elif [ "$TOGGLE" == "view" ]
 then
-	get_static_image $UNIQUE_NAME
+	get_static_image $UNIQUE_NAME KEY_NAME
 else
 	echo "FATAL: No mode selected."
-	usage
+	usage;;
 fi

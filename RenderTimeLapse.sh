@@ -17,7 +17,7 @@ function usage() {
 }
 
 function fetch_images() {
-  echo "INFO: Fetch images function called with target: $1  Keyname: $2"
+  echo "INFO: Fetch images function called with target: $1  ssh key: $2"
 
   scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
 
@@ -98,6 +98,7 @@ while [[ $# -gt 0 ]]; do
         fi
 				UNIQUE_NAME=${2}
         KEY_NAME=${3}
+        IMAGE_PATH="./images"
 				fetch_images $UNIQUE_NAME $KEY_NAME
         render $IMAGE_PATH
       fi
