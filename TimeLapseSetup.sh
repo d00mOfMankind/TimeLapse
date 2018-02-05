@@ -101,20 +101,46 @@ function setup(){
 
 	validation $4 $1
 
+	HOME=/home/pi
+
 	if [ ! -f ./bin/lapse.py ]
 	then
 		echo "ERROR: lapse.py program does not exist in bin."
 		exit 1
 	fi
 
-	FOLDER_STATUS=$(ssh -i ./bin/$4 pi@raspberrypi-$1 if [ -d ~/TimeLapse/tl ]; then echo \"deep\"; elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]; then echo \"shallow\"; elif [ ! -d ~/TimeLapse ]; then echo \"bare\"; fi)
+	if [ -f ./bin/check.sh ]
+	then
+		rm ./bin/check.sh
+	fi
+
+	touch ./bin/check.sh
+
+	echo "#!/usr/bin/env bash
+	if [ -d ~/TimeLapse/tl ]
+	then
+	    echo \"deep\"
+	elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]
+	then
+	    echo \"shallow\"
+	elif [ ! -d ~/TimeLapse ]
+	then
+	    echo \"bare\"
+	else
+	    echo \"none\"
+	fi
+	" >> ./bin/check.sh
+
+	FOLDER_STATUS=$(ssh -i ./bin/$4 pi@raspberrypi-$1 'bash -s' < ./bin/check.sh)
+
+	rm ./bin/check.sh
 
 	#if both folders exist
 	if [ "$FOLDER_STATUS" == "deep" ]
 	then
 		echo "STATUS: Deep folder status found. Continuing..."
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
-		NUMBER="ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 ~/TimeLapse/tl | wc -l"
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
+		NUMBER="ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 $HOME/TimeLapse/tl | wc -l"
 
 		#if there are images
 		if [ ! $NUMBER -eq 0 ]
@@ -128,21 +154,22 @@ function setup(){
 				exit 1
 			fi
 			#remove all files
-			ssh -i ./bin/$4 pi@raspberrypi-$1 rm ~/TimeLapse/tl/*
+			ssh -i ./bin/$4 pi@raspberrypi-$1 rm $HOME/TimeLapse/tl/*
 		fi
 
 	#if only top level folder exists
 	elif [ "$FOLDER_STATUS" == "shallow" ]
 	then
 		echo "STATUS: Shallow folder status found. Continuing..."
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
 
 	#if no folders exist
 	elif [ "$FOLDER_STATUS" == "bare" ]
 	then
-		echo "STATUS: ~/TimeLapse not found on $1. Creating..."
-		ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir ~/TimeLapse
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:~/TimeLapse/lapse.py
+		echo "STATUS: $HOME/TimeLapse not found on $1. Creating..."
+		ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir $HOME/TimeLapse
+		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
+		#ssh -i ./bin/$4 pi@raspberrypi-$1 chmod 777 $HOME/TimeLapse/lapse.py
 	else
 		echo "ERROR: Unknown folder status."
 		echo "     : This could be from an incorrect ssh key."
@@ -151,14 +178,14 @@ function setup(){
 	fi
 
 	echo "STATUS: Setting up program..."
-	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup ~/TimeLapse/lapse.py $2 $3 &
+	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup python $HOME/TimeLapse/lapse.py $2 $3 &
 	if [ -f ./bin/output.txt ]
 	then
 		rm ./bin/output.txt
 	fi
 
 	load_ani
-	scp -i ./bin/$4 pi@raspberrypi-$1:~/TimeLapse/output.txt ./bin/output.txt
+	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/TimeLapse/output.txt ./bin/output.txt
 
 	cat output.txt
 
