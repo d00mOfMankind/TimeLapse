@@ -95,7 +95,10 @@ function validation() {
 
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
-
+	ssh -i ./bin/$2 pi@raspberrypi-$1 raspistill -t 0 -o testimg.jpeg -n -w 1920 -h 1080
+	echo "STATUS: Downloading image."
+	scp -i ./bin/$2 pi@raspberrypi-$1 ~/testimg.jpeg testimg.jpeg
+	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
 	
 
 }
