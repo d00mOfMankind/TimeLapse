@@ -8,11 +8,11 @@ import sys
 import os
 #import time #debug
 
-if os.path.isfile("output.txt"):
-	os.remove("output.txt")
+if os.path.isfile("timelapse_output.txt"):
+	os.remove("timelapse_output.txt")
 
 
-outputFile = open("output.txt", "a")
+outputFile = open("timelapse_output.txt", "a")
 
 
 #take time interval, number of photos
@@ -57,14 +57,14 @@ outputFile.close()
 #MAKE SURE TO ACCOUNT FOR COMPUTE TIME BETWEEN IMAGES
 counter = 0
 imgLoc = ""
-if not (os.path.isdir("tl")):
-	os.makedirs("tl")
+if not (os.path.isdir("TimeLapse_images")):
+	os.makedirs("TimeLapse_images")
 
 while True:
 	now = datetime.datetime.now()
 	if now >= lastTime + datetime.timedelta(seconds = ti): #if it has been ti time since last image taken
 
-		imgLoc = "tl/" + "{0:0>4}".format(str(counter+1)) + ".jpeg"
+		imgLoc = "TimeLapse_images/" + "{0:0>4}".format(str(counter+1)) + ".jpeg"
 		lastTime = now
 		counter+=1
 
@@ -76,6 +76,6 @@ while True:
 	if counter >= number: #when we have taken all pictures
 		break
 
-outputFile = open("output.txt", "a")
+outputFile = open("timelapse_output.txt", "a")
 outputFile.write("Program has now completed.\nfin")
 outputFile.close()
