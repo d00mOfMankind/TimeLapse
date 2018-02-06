@@ -118,7 +118,8 @@ function get_update() {
 	then
 		cat timelapse_status.txt
 	else
-		echo \"====--------||--------====
+		echo \"
+		====--------||--------====
     Program not yet started.
     ====--------||--------====\" >> timelapse_status.txt
 		cat timelapse_status.txt
