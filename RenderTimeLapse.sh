@@ -39,7 +39,9 @@ function render() {
   if [ ! -f ffmpeg ]
   then
   	echo "ERROR: ffmpeg does not exist in local directory."
-  	echo "     : Download ffmpeg from https://www.ffmpeg.org/Download/ and extract the ffmpeg file to local location."
+  	echo "     : Download ffmpeg from either"
+    echo "     : https://www.ffmpeg.org/Download/ or http://ffbinaries.com/downloads"
+    echo "     : and extract the ffmpeg file to local location."
     echo "     : The images will not be deleted."
   	exit 1
   fi
