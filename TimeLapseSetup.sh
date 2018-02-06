@@ -18,27 +18,27 @@ function usage() {
 }
 
 function load_ani() {
-	echo -ne "[>.........]"\\r
+	echo -ne "[>.........]   0%"\\r
 	sleep 0.5
-	echo -ne "[=>........]"\\r
+	echo -ne "[=>........]  10%"\\r
 	sleep 0.5
-	echo -ne "[==>.......]"\\r
+	echo -ne "[==>.......]  20%"\\r
 	sleep 0.5
-	echo -ne "[===>......]"\\r
+	echo -ne "[===>......]  30%"\\r
 	sleep 0.5
-	echo -ne "[====>.....]"\\r
+	echo -ne "[====>.....]  40%"\\r
 	sleep 0.5
-	echo -ne "[=====>....]"\\r
+	echo -ne "[=====>....]  50%"\\r
 	sleep 0.5
-	echo -ne "[======>...]"\\r
+	echo -ne "[======>...]  60%"\\r
 	sleep 0.5
-	echo -ne "[=======>..]"\\r
+	echo -ne "[=======>..]  70%"\\r
 	sleep 0.5
-	echo -ne "[========>.]"\\r
+	echo -ne "[========>.]  80%"\\r
 	sleep 0.5
-	echo -ne "[=========>]"\\r
+	echo -ne "[=========>]  90%"\\r
 	sleep 0.5
-	echo -ne "[==========]"\\r
+	echo -ne "[==========] 100%"\\r
 	echo ""
 
 }
@@ -77,14 +77,14 @@ function validation() {
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
 
-	validation $2 $1
+	
 
 }
 
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
 
-	validation $2 $1
+	
 
 
 }
@@ -92,14 +92,14 @@ function get_update() {
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
 
-	validation $2 $1
+	
 
 }
 
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
-	validation $4 $1
+	
 
 	HOME=/home/pi
 
@@ -262,6 +262,8 @@ while [[ $# -gt 0 ]]; do
 			;;
 	esac
 done
+
+validation $KEY_NAME $UNIQUE_NAME
 
 if [ "$TOGGLE" == "start" ]
 then
