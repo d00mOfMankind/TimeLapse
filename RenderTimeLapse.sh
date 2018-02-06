@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 
 function usage() {
-  echo "Usage: $(basename ${0}) --(remote {unique name} {ssh key name} | local {path}) [-h | --help]"
+  echo "Usage: $(basename ${0}) --[ remote {unique name} {ssh key name}"
+  echo "                          | local {path}]"
+  echo "                            --help"
   echo ""
-  echo "   Example:   $(basename ${0}) --remote maleficent my-private-key"
+  echo "   Examples:   $(basename ${0}) --remote maleficent my-private-key"
+  echo "               $(basename ${0}) --local images"
   echo ""
-  echo " --remote             - Fetch timelapse images from Raspberry Pi."
+  echo " --remote     -r      - Fetch timelapse images from Raspberry Pi."
   echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
   echo "                        remote assumes that the remote path is ~/TimeLapse_images"
   echo "                        'ssh key name' is the name of the ssh private key that the program."
   echo "                        will attempt to connect with. This should be placed in ./bin"
-  echo " --local              - Use locally stored timelapse images."
+  echo " --local      -l      - Use locally stored timelapse images."
+  echo ""
   echo " --help       -h      - View this page."
   echo ""
   exit -1
@@ -19,7 +23,7 @@ function usage() {
 function fetch_images() {
   echo "INFO: Fetch images function called with target: $1  ssh key: $2"
 
-  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images/* ./images
+  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images ./images
 
 }
 
@@ -81,7 +85,7 @@ case "${1}" in
   -h|--help)
     usage
     ;;
-  --remote)
+  --remote|-r)
 		if [ -z "${2}" ]
 		then
 			echo "ERROR: (--remote) Target not defined."
@@ -91,7 +95,7 @@ case "${1}" in
       echo "ERROR: (--remote) ssh key not defined."
       exit 1
 		else
-      if [ -f "./bin/${3}" ]
+      if [ ! -f "./bin/${3}" ]
       then
         echo "ERROR: Key: ./bin/${3} does not exist."
       fi
@@ -102,7 +106,7 @@ case "${1}" in
       render $IMAGE_PATH
     fi
     ;;
-  --local)
+  --local|-l)
     if [ -z "${2}" ]
     then
       echo "ERROR: (--local) Path not defined."
