@@ -232,6 +232,7 @@ function setup(){
 	fi
 
 	#copy lapse.py to server
+	echo "STATUS: Uploading camera control file..."
 	scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$TIMELAPSE/lapse.py
 
 	#ssh -i ./bin/$4 pi@raspberrypi-$1 ls "$TIMELAPSE"
@@ -249,6 +250,7 @@ function setup(){
 	fi
 
 	load_ani
+	echo "STATUS: Downloading output file..."
 	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/timelapse_output.txt ./bin/output.txt
 
 	cat ./bin/output.txt
