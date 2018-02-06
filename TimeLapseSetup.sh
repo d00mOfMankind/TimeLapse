@@ -31,27 +31,49 @@ function usage() {
 }
 
 function load_ani() {
-	echo -ne "[>.........]   0%"\\r
-	sleep 0.5
-	echo -ne "[=>........]  10%"\\r
-	sleep 0.5
-	echo -ne "[==>.......]  20%"\\r
-	sleep 0.5
-	echo -ne "[===>......]  30%"\\r
-	sleep 0.5
-	echo -ne "[====>.....]  40%"\\r
-	sleep 0.5
-	echo -ne "[=====>....]  50%"\\r
-	sleep 0.5
-	echo -ne "[======>...]  60%"\\r
-	sleep 0.5
-	echo -ne "[=======>..]  70%"\\r
-	sleep 0.5
-	echo -ne "[========>.]  80%"\\r
-	sleep 0.5
-	echo -ne "[=========>]  90%"\\r
-	sleep 0.5
-	echo -ne "[==========] 100%"\\r
+	#echo -ne "[>.........]   0%"\\r
+	#sleep 0.5
+	#echo -ne "[=>........]  10%"\\r
+	#sleep 0.5
+	#echo -ne "[==>.......]  20%"\\r
+	#sleep 0.5
+	#echo -ne "[===>......]  30%"\\r
+	#sleep 0.5
+	#echo -ne "[====>.....]  40%"\\r
+	#sleep 0.5
+	#echo -ne "[=====>....]  50%"\\r
+	#sleep 0.5
+	#echo -ne "[======>...]  60%"\\r
+	#sleep 0.5
+	#echo -ne "[=======>..]  70%"\\r
+	#sleep 0.5
+	#echo -ne "[========>.]  80%"\\r
+	#sleep 0.5
+	#echo -ne "[=========>]  90%"\\r
+	#sleep 0.5
+	#echo -ne "[==========] 100%"\\r
+	#echo ""
+
+	per=100
+	lstring="="
+	load=""
+	point=">"
+	dot="."
+	dots=""
+
+	while [ $per -ge 1 ]; do
+		dots=$dots$dot
+		per=$((per-1))
+	done
+
+	while [ $per -le 100 ]; do
+		echo -ne "[$load$point$dots] $per %" \\r
+		load=$load$lstring
+		dots=${dots%?}
+		per=$((per+1))
+		sleep 0.05
+	done
+
 	echo ""
 
 }
@@ -95,9 +117,11 @@ function validation() {
 
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
-	ssh -i ./bin/$2 pi@raspberrypi-$1 raspistill -t 0 -o testimg.jpeg -n -w 1920 -h 1080
+	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
+	ssh -i ./bin/$2 pi@raspberrypi-$1 raspistill -t 1 -o testimg.jpeg -n -w 1920 -h 1080
+	load_ani
 	echo "STATUS: Downloading image."
-	scp -i ./bin/$2 pi@raspberrypi-$1 ~/testimg.jpeg testimg.jpeg
+	scp -i ./bin/$2 pi@raspberrypi-$1:~/testimg.jpeg ./testimg.jpeg
 	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
 	
 
