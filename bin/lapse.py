@@ -14,7 +14,7 @@ if os.path.isfile("timelapse_status.txt"):
 	os.remove("timelapse_status.txt")
 
 outputFile = open("timelapse_status.txt", "w")
-outputFile.write("====--------||--------====\nProgram is running.\n====--------||--------====\n")
+outputFile.write("    ====--------||--------====\n    Program is running.\n    ====--------||--------====\n")
 outputFile.close()
 
 outputFile = open("timelapse_output.txt", "a")
@@ -87,5 +87,5 @@ outputFile.write("fin\n")
 outputFile.close()
 
 outputFile = open("timelapse_status.txt", "w")
-outputFile.write("====--------||--------====\nProgram completed at " + datetime.datetime.now() + "\n====--------||--------====\n")
+outputFile.write("    ====--------||--------====\n    Program completed at " + str(datetime.datetime.now()) + "\n    ====--------||--------====\n")
 outputFile.close()
