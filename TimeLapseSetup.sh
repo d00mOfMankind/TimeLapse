@@ -12,15 +12,15 @@ function usage() {
 	echo "               $(basename ${0}) --key my-private-key --start maleficent 5 2000"
 	echo "               $(basename ${0}) --i my-private-key --status maleficent"
 	echo ""
-	echo " --viewtest    -v     - Get a single image from the remote camera to test the view."
+	echo " --viewtest           - Get a single image from the remote camera to test the view."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-	echo " --start       -S     - Start the timelapse camera."
+	echo " --start       -s     - Start the timelapse camera."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo "                        'time interval' refers to the time the camera will wait between images."
 	echo "                        'number of images' refers to the number of images that you want the camera to take."
-	echo " --status      -s     - Prints the status of the Raspberry Pi time lapse server."
+	echo " --status             - Prints the status of the Raspberry Pi time lapse server."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-	echo " --cancel      -c     - Cancels a running time lapse, the images that have already been taken are not removed."
+	echo " --cancel             - Cancels a running time lapse, the images that have already been taken are not removed."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo ""
 	echo " --key       -k/-i    - Provides the ssh key for the connection."
@@ -118,7 +118,7 @@ function get_update() {
 	then
 		cat timelapse_status.txt
 	else
-		echo \"    ====--------||--------====
+		echo \"====--------||--------====
     Program not yet started.
     ====--------||--------====\" >> timelapse_status.txt
 		cat timelapse_status.txt
@@ -279,7 +279,7 @@ while [[ $# -gt 0 ]]; do
 	  -h|--help)
 			usage
 			;;
-		--viewtest|-v)
+		--viewtest)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 			  echo "ERROR: (--viewtest) Target not defined."
@@ -290,7 +290,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--cancel|-c)
+		--cancel)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--cancel) Target not defined."
@@ -301,7 +301,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--status|-s)
+		--status)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--status) Target not defined."
@@ -312,7 +312,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--start|-S)
+		--start|-s)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--start) Target not defined."
