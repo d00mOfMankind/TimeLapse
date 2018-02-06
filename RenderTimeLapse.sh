@@ -7,7 +7,7 @@ function usage() {
   echo ""
   echo " --remote             - Fetch timelapse images from Raspberry Pi."
   echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-  echo "                        remote assumes that the remote path is ~/TimeLapse/tl/"
+  echo "                        remote assumes that the remote path is ~/TimeLapse_images"
   echo "                        'ssh key name' is the name of the ssh private key that the program."
   echo "                        will attempt to connect with. This should be placed in ./bin"
   echo " --local              - Use locally stored timelapse images."
@@ -19,7 +19,7 @@ function usage() {
 function fetch_images() {
   echo "INFO: Fetch images function called with target: $1  ssh key: $2"
 
-  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse/tl ./images
+  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images/* ./images
 
 }
 

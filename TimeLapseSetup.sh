@@ -102,12 +102,32 @@ function cancel_running_lapse() {
 
 }
 
+function image_removal(){
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 $HOME/TimeLapse_images | wc -l)
+
+	#if there are images
+	if ! [ $NUMBER -eq 0 ]
+	then
+		echo "INFO: There are currently: $NUMBER images on $1"
+		echo "    : If you continue with this setup they will be permanently removed."
+		read -p "OPTION: Continue with this setup? y/n: " continue_option
+		if [ "$continue_option" == "n" ] || [ "$continue_option" == "N" ] || [ "$continue_option" == "no" ] || [ "$continue_option" == "No" ]
+		then
+			echo "STATUS: Cancelling setup..."
+			exit 1
+		fi
+		#remove all files
+		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $HOME/TimeLapse_images/*
+	fi
+}
+
 function setup(){
 	echo "INFO: Setup function called with target: $1  ssh key: $4"
 
 	
 
 	HOME=/home/pi
+	TIMELAPSE=/home/pi/TimeLapse
 
 	if [ ! -f ./bin/lapse.py ]
 	then
@@ -123,17 +143,22 @@ function setup(){
 	touch ./bin/check.sh
 
 	echo "#!/usr/bin/env bash
-	if [ -d ~/TimeLapse/tl ]
+	if [ -d ~/TimeLapse ] && [ -d ~/TimeLapse_images ]
 	then
-	  echo \"deep\"
-	elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]
+	  echo \"both\"
+
+	elif [ ! -d ~/TimeLapse ] && [ -d ~/TimeLapse_images ]
 	then
-	  echo \"shallow\"
-	elif [ ! -d ~/TimeLapse ]
+	  echo \"image\"
+
+	elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse_images ]
 	then
-	  echo \"bare\"
-	else
-	  echo \"none\"
+	  echo \"main\"
+
+	elif [ ! -d ~/TimeLapse ] && [ ! -d ~/TimeLapse_images ]
+	then
+		echo \"none\"
+
 	fi
 	" >> ./bin/check.sh
 
@@ -142,40 +167,29 @@ function setup(){
 	rm ./bin/check.sh
 
 	#if both folders exist
-	if [ "$FOLDER_STATUS" == "deep" ]
+	if [ "$FOLDER_STATUS" == "both" ]
 	then
-		echo "STATUS: Deep folder status found. Continuing..."
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
-		NUMBER="ssh -i ./bin/$4 pi@raspberrypi-$1 ls -1 $HOME/TimeLapse/tl | wc -l"
+		echo "STATUS: All folder exist status. Continuing..."
+		image_removal $1 $4
 
-		#if there are images
-		if [ ! $NUMBER -eq 0 ]
-		then
-			echo "INFO: There are currently: $NUMBER images on $1"
-			echo "    : If you continue with this setup they will be permanently removed."
-			read -p "OPTION: Continue with this setup? y/n: " continue_option
-			if [ "$continue_option" == "n" ] || [ "$continue_option" == "N" ] || [ "$continue_option" == "no" ] || [ "$continue_option" == "No" ]
-			then
-				echo "STATUS: Cancelling setup..."
-				exit 1
-			fi
-			#remove all files
-			ssh -i ./bin/$4 pi@raspberrypi-$1 rm $HOME/TimeLapse/tl/*
-		fi
-
-	#if only top level folder exists
-	elif [ "$FOLDER_STATUS" == "shallow" ]
+	#if only image folder exists
+	elif [ "$FOLDER_STATUS" == "image" ]
 	then
-		echo "STATUS: Shallow folder status found. Continuing..."
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
+	echo "STATUS: $TIMELAPSE not found on $1. Creating..."
+	ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir $HOME/TimeLapse
+	image_removal $1 $4
+
+
+	#if only main folder exists
+	elif [ "$FOLDER_STATUS" == "main" ]
+	then
+	echo "STATUS: Folder status acceptable on $1. Continuing..."
 
 	#if no folders exist
-	elif [ "$FOLDER_STATUS" == "bare" ]
+	elif [ "$FOLDER_STATUS" == "none" ]
 	then
-		echo "STATUS: $HOME/TimeLapse not found on $1. Creating..."
+		echo "STATUS: $TIMELAPSE not found on $1. Creating..."
 		ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir $HOME/TimeLapse
-		scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$HOME/TimeLapse/lapse.py
-		#ssh -i ./bin/$4 pi@raspberrypi-$1 chmod 777 $HOME/TimeLapse/lapse.py
 	else
 		echo "ERROR: Unknown folder status."
 		echo "     : This could be from an incorrect ssh key."
@@ -183,15 +197,25 @@ function setup(){
 		exit 1
 	fi
 
+	#copy lapse.py to server
+	scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$TIMELAPSE/lapse.py
+
+	#ssh -i ./bin/$4 pi@raspberrypi-$1 ls "$TIMELAPSE"
+
 	echo "STATUS: Setting up program..."
-	ssh -i ./bin/$4 pi@raspberrypi-$1 cd /home/pi/TimeLapse && python lapse.py $2 $3
+	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup python $TIMELAPSE/lapse.py $2 $3 &
 	if [ -f ./bin/output.txt ]
 	then
 		rm ./bin/output.txt
 	fi
+	
+	if [ -f ./nohup.out ]
+	then
+		rm ./nohup.out
+	fi
 
 	load_ani
-	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/TimeLapse/output.txt ./bin/output.txt
+	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/timelapse_output.txt ./bin/output.txt
 
 	cat ./bin/output.txt
 
