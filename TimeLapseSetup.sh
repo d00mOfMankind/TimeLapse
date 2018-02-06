@@ -45,30 +45,36 @@ function load_ani() {
 
 # var1 = sshkey, var2 = hostname
 function validation() {
+	host=$2
+	echo "Hostname: $host"
+	key=$1
+	echo "ssh key : $key"
+
 	#key name check
-	if [ "$1" == "" ]
+	if [ "$key" == "-" ]
 	then
 		echo "ERROR: (--key) ssh key not defined."
 		exit 1
 	fi
 
 	#hostname ping test
-	extcode=$(ping -c 1 raspberrypi-$2)
-	if [ "$extcode" == "0" ]
+	extcode=$(ping -c 1 raspberrypi-$host)
+	echo "$extcode"
+	if [ "$extcode" == "0" ] || [ "$extcode" == "" ]
 	then
-		echo "ERROR: Host raspberrypi-$2 unreachable/offline."
+		echo "ERROR: Host raspberrypi-$host unreachable/offline."
 		exit 1
 	else
-		echo "INFO: Host raspberrypi-$2 online."
+		echo "INFO: Host raspberrypi-$host online."
 	fi
 
 	#connection test
-	extcode=$(ssh -i ./bin/$1 pi@raspberrypi-$2 echo "ssh connection test")
+	extcode=$(ssh -i ./bin/$key pi@raspberrypi-$host echo "ssh connection test")
 	if [ "$extcode" == "ssh connection test" ]
 	then
-	  echo "INFO: Connection to raspberrypi-$2 established."
+	  echo "INFO: Connection to raspberrypi-$host established."
 	else
-	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$2"
+	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$host"
 	  echo "     : Most probable cause, wrong ssh key used."
 	  echo "     : Make sure your key is in ./bin"
 	fi
@@ -119,15 +125,15 @@ function setup(){
 	echo "#!/usr/bin/env bash
 	if [ -d ~/TimeLapse/tl ]
 	then
-	    echo \"deep\"
+	  echo \"deep\"
 	elif [ -d ~/TimeLapse ] && [ ! -d ~/TimeLapse/tl ]
 	then
-	    echo \"shallow\"
+	  echo \"shallow\"
 	elif [ ! -d ~/TimeLapse ]
 	then
-	    echo \"bare\"
+	  echo \"bare\"
 	else
-	    echo \"none\"
+	  echo \"none\"
 	fi
 	" >> ./bin/check.sh
 
@@ -178,7 +184,7 @@ function setup(){
 	fi
 
 	echo "STATUS: Setting up program..."
-	ssh -i ./bin/$4 pi@raspberrypi-$1 nohup python $HOME/TimeLapse/lapse.py $2 $3 &
+	ssh -i ./bin/$4 pi@raspberrypi-$1 cd /home/pi/TimeLapse && python lapse.py $2 $3
 	if [ -f ./bin/output.txt ]
 	then
 		rm ./bin/output.txt
@@ -193,11 +199,11 @@ function setup(){
 }
 
 
-UNIQUE_NAME=""
-TIME_INTERVAL=""
-NUMBER_OF_IMAGES=""
-KEY_NAME=""
-TOGGLE=""
+UNIQUE_NAME="-"
+TIME_INTERVAL="-"
+NUMBER_OF_IMAGES="-"
+KEY_NAME="-"
+TOGGLE="-"
 
 if [[ $# -eq 0 ]]
 then
@@ -263,6 +269,7 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
+#check that all neede variables set
 validation $KEY_NAME $UNIQUE_NAME
 
 if [ "$TOGGLE" == "start" ]
