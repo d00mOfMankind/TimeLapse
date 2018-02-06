@@ -103,13 +103,32 @@ function get_static_image() {
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
 
-	
+	if [ -f ./bin/check.sh ]
+	then
+		rm ./bin/check.sh
+	fi
 
+	touch ./bin/check.sh
+
+	echo "#!/usr/bin/env bash
+	if [ -f timelapse_status.txt ]
+	then
+		cat timelapse_status.txt
+	else
+		echo \"\n====--------||--------====\nProgram not yet started.\n====--------||--------====\n\" >> timelapse_status.txt
+		cat timelapse_status.txt
+	fi
+	" >> ./bin/check.sh
+
+	ssh -i ./bin/$2 pi@raspberrypi-$1 'bash -s' < ./bin/check.sh
+
+	rm ./bin/check.sh
 
 }
 
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
+
 
 	
 
