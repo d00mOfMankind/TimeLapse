@@ -116,7 +116,7 @@ function cancel_running_lapse() {
 }
 
 function image_removal(){
-	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 $HOME/TimeLapse_images | wc -l)
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 $3/TimeLapse_images | wc -l)
 
 	#if there are images
 	if ! [ $NUMBER -eq 0 ]
@@ -130,7 +130,7 @@ function image_removal(){
 			exit 1
 		fi
 		#remove all files
-		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $HOME/TimeLapse_images/*
+		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $3/TimeLapse_images/*
 	fi
 }
 
@@ -183,14 +183,14 @@ function setup(){
 	if [ "$FOLDER_STATUS" == "both" ]
 	then
 		echo "STATUS: All folder exist status. Continuing..."
-		image_removal $1 $4
+		image_removal $1 $4 $HOME
 
 	#if only image folder exists
 	elif [ "$FOLDER_STATUS" == "image" ]
 	then
 	echo "STATUS: $TIMELAPSE not found on $1. Creating..."
 	ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir $HOME/TimeLapse
-	image_removal $1 $4
+	image_removal $1 $4 $HOME
 
 
 	#if only main folder exists
