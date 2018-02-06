@@ -211,7 +211,7 @@ while [[ $# -gt 0 ]]; do
 			usage
 			;;
 		--viewtest)
-			if [ -z "${2}" ] || [ "${2}" == -* ]
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 			  echo "ERROR: (--viewtest) Target not defined."
 			  exit 1
@@ -222,15 +222,15 @@ while [[ $# -gt 0 ]]; do
 			shift 2
 			;;
 		--start)
-			if [ -z "${2}" ] || [ "${2}" == -* ]
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--start) Target not defined."
 				exit 1
-			elif [ -z "${3}" ] || [ "${3}" == -* ]
+			elif [ -z "${3}" ] || [[ "${3}" == -* ]]
 			then
 				echo "ERROR: (--start) Time interval not defined."
 				exit 1
-			elif [ -z "${4}" ] || [ "${4}" == -* ]
+			elif [ -z "${4}" ] || [[ "${4}" == -* ]]
 			then
 				echo "ERROR: (--start) Number of images not defined."
 				exit 1
@@ -243,7 +243,7 @@ while [[ $# -gt 0 ]]; do
 			shift 4
 			;;
 		--key)
-			if [ -z "${2}" ] || [ "${2}" == -* ]
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--key) ssh key not defined."
 				exit 1
