@@ -1,18 +1,31 @@
 #!/usr/bin/env bash
 
 function usage() {
-	echo "Usage: $(basename ${0}) --(viewtest {unique name} | start {unique name} {time interval} {number of images}"
-	echo "                        --key {ssh key name})"
+	echo "Usage: $(basename ${0}) --[ viewtest {unique name}"
+	echo "                          | start {unique name} {time interval} {number of images}"
+	echo "                          | status {unique name}"
+	echo "                          | cancel {unique name}]"
+	echo "                            --key {ssh key name}"
+	echo "                          	--help"
 	echo ""
 	echo "   Examples:   $(basename ${0}) --viewtest maleficent --key my-private-key"
+	echo "               $(basename ${0}) --key my-private-key --start maleficent 5 2000"
+	echo "               $(basename ${0}) --i my-private-key --status maleficent"
 	echo ""
-	echo " --viewtest           - Get a single image from the remote camera to test the view."
+	echo " --viewtest    -v     - Get a single image from the remote camera to test the view."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-	echo " --start              - Start the timelapse camera."
+	echo " --start       -S     - Start the timelapse camera."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo "                        'time interval' refers to the time the camera will wait between images."
 	echo "                        'number of images' refers to the number of images that you want the camera to take."
-	echo " --key                - Provides the ssh key for the connection."
+	echo " --status      -s     - Prints the status of the Raspberry Pi time lapse server."
+	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
+	echo " --cancel      -c     - Cancels a running time lapse, the images that have already been taken are not removed."
+	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
+	echo ""
+	echo " --key       -k/-i    - Provides the ssh key for the connection."
+	echo ""
+	echo " --help        -h     - This page."
 	echo ""
 	exit -1
 }
@@ -208,7 +221,7 @@ function setup(){
 	then
 		rm ./bin/output.txt
 	fi
-	
+
 	if [ -f ./nohup.out ]
 	then
 		rm ./nohup.out
@@ -240,7 +253,7 @@ while [[ $# -gt 0 ]]; do
 	  -h|--help)
 			usage
 			;;
-		--viewtest)
+		--viewtest|-v)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 			  echo "ERROR: (--viewtest) Target not defined."
@@ -251,7 +264,29 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--start)
+		--cancel|-c)
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
+			then
+				echo "ERROR: (--cancel) Target not defined."
+				exit 1
+			else
+				UNIQUE_NAME=${2}
+				TOGGLE="cancel"
+			fi
+			shift 2
+			;;
+		--status|-s)
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
+			then
+				echo "ERROR: (--status) Target not defined."
+				exit 1
+			else
+				UNIQUE_NAME=${2}
+				TOGGLE="status"
+			fi
+			shift 2
+			;;
+		--start|-S)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--start) Target not defined."
@@ -272,7 +307,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 4
 			;;
-		--key)
+		--key|-k|-i)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--key) ssh key not defined."
@@ -302,6 +337,12 @@ then
 elif [ "$TOGGLE" == "view" ]
 then
 	get_static_image $UNIQUE_NAME $KEY_NAME
+elif [ "$TOGGLE" == "status" ]
+then
+	get_update $UNIQUE_NAME $KEY_NAME
+elif [ "$TOGGLE" == "cancel" ]
+then
+	cancel_running_lapse $UNIQUE_NAME $KEY_NAME
 else
 	echo "FATAL: No mode selected."
 	usage

@@ -10,7 +10,12 @@ import os
 
 if os.path.isfile("timelapse_output.txt"):
 	os.remove("timelapse_output.txt")
+if os.path.isfile("timelapse_status.txt"):
+	os.remove("timelapse_status.txt")
 
+outputFile = open("timelapse_status.txt", "a")
+outputFile.write("\n====--------||--------====\n    Program is running.\n====--------||--------====\nfin")
+outputFile.close()
 
 outputFile = open("timelapse_output.txt", "a")
 
@@ -76,6 +81,11 @@ while True:
 	if counter >= number: #when we have taken all pictures
 		break
 
+
 outputFile = open("timelapse_output.txt", "a")
-outputFile.write("Program has now completed.\nfin")
+outputFile.write("\nfin")
+outputFile.close()
+
+outputFile = open("timelapse_status.txt", "a")
+outputFile.write("\n====--------||--------====\nProgram has now completed.\n====--------||--------====\nfin")
 outputFile.close()
