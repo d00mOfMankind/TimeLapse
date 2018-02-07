@@ -85,6 +85,8 @@ function validation() {
 	key=$1
 	echo "ssh key : $key"
 
+	echo ""
+
 	#key name check
 	if [ "$key" == "-" ]
 	then
@@ -103,6 +105,8 @@ function validation() {
 		echo "INFO: Host raspberrypi-$host online."
 	fi
 
+	echo ""
+
 	#connection test
 	extcode=$(ssh -i ./bin/$key pi@raspberrypi-$host echo "ssh connection test")
 	if [ "$extcode" == "ssh connection test" ]
@@ -114,6 +118,9 @@ function validation() {
 	  echo "     : Make sure your key is in ./bin"
 	  exit 1
 	fi
+
+	echo ""
+
 }
 
 function get_static_image() {
@@ -145,9 +152,33 @@ function get_update() {
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
 
+	RUNNING=$(ssh -i ./bin/$2 pi@raspberrypi-$1 pidof python)
+	echo "$RUNNING"
+	if [ ! "$RUNNING" == "" ]
+	then
+		NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+		echo "STATUS: Downloading output file..."
+		scp -i ./bin/$2 pi@raspberrypi-$1:timelapse_output.txt ./bin/output.txt
 
-	
+		echo ""
+		cat ./bin/output.txt
+		echo ""
+		echo "$NUMBER images have already been taken (and will not be deleted if you halt)."
+		read -p "OPTION: Are you sure you want to halt the timelapse? y/n: " halt_option
 
+		if [ "$halt_option" == "y" ] || [ "$halt_option" == "Y" ] || [ "$halt_option" == "yes" ] || [ "$halt_option" == "Yes" ]
+		then
+			ssh -i ./bin/$2 pi@raspberrypi-$1 'killall -w python; rm timelapse_status.txt'
+		fi
+	else
+		echo "INFO: Timelapse is not running, therefore cannot be halted."
+	fi
+
+	echo ""
+	echo "INFO: python process successfully killed on target $1"
+	echo "INFO: Timelapse halted."
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+	echo "INFO: $NUMBER images remain on device."
 }
 
 function image_removal(){
