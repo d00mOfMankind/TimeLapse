@@ -131,7 +131,7 @@ function get_static_image() {
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
 	
-	EXIST=$(ssh -i ./bin/pi-ssh-key pi@raspberrypi-bane 'if [ -f timelapse_status.txt ]; then echo "y"; fi')
+	EXIST=$(ssh -i ./bin/$2 pi@raspberrypi-$1 'if [ -f timelapse_status.txt ]; then echo "y"; fi')
 
 	if [ ! "$EXIST" == "y" ]
 	then
@@ -151,7 +151,7 @@ function cancel_running_lapse() {
 }
 
 function image_removal(){
-	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 $3/TimeLapse_images | wc -l)
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
 
 	#if there are images
 	if ! [ $NUMBER -eq 0 ]
