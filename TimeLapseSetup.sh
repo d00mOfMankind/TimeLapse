@@ -40,6 +40,10 @@ function usage() {
 	echo ""
 	echo " --help        -h     - This page."
 	echo ""
+	echo ""
+	echo " Hint."
+	echo "      If you enter mutiple of the control switches the program will run the last one entered."
+	echo ""
 	exit -1
 }
 
@@ -294,12 +298,75 @@ function setup(){
 
 }
 
+function fetch_images() {
+  echo "INFO: Fetch images function called with target: $1  ssh key: $2"
+  FOLDER_EXIST=$(ssh -i ./bin/$2 pi@raspberrypi-$1 'if [ -d TimeLapse_images ]; then echo "y"; fi')
+  NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+
+  if [ ! "$FOLDER_EXIST" == "y" ] || [ "$NUMBER" == "0" ]
+  then
+    echo "ERROR: No files exist on target."
+    exit 1
+  fi
+
+  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images ./images
+
+}
+
+function render() {
+  echo "INFO: Rendering Function called with path: $1"
+
+  #Check if directory is empty
+  if [ "$(ls -A $1)" ]
+  then
+    echo "STATUS: $1 has files in it. Continuing..."
+  else
+    echo "ERROR: $1 is empty."
+    exit 1
+  fi
+
+  #Check if ffmpeg exists
+  if [ ! -f ffmpeg ]
+  then
+  	echo "ERROR: ffmpeg does not exist in local directory."
+  	echo "     : Download ffmpeg from either"
+    echo "     : https://www.ffmpeg.org/Download/ or http://ffbinaries.com/downloads"
+    echo "     : and extract the ffmpeg file to local location."
+    echo "     : The images will not be deleted."
+  	exit 1
+  fi
+
+
+  #Does the user want to clean up afterwards
+  read -p "OPTION: Do you want to remove ALL files in the image directory after render complete? y/n: " remove_option
+  read -p "OPTION: What framerate do you want in the output video? (Leave blank for 20): " fps 
+
+  if [ "$fps" == "" ]
+  then
+    fps="20"
+  fi
+
+  #Render
+  ./ffmpeg -r $fps -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4
+
+  #Removing unneeded files (possibly)
+  if [ "$remove_option" == "y" ] || [ "$remove_option" == "Y" ] || [ "$remove_option" == "yes" ] || [ "$remove_option" == "Yes" ]
+  then
+  	echo "STATUS: Cleaning up unneeded files..."
+  	rm -r $1
+  fi
+
+  echo "INFO: Render complete."
+
+}
+
 
 UNIQUE_NAME="-"
 TIME_INTERVAL="-"
 NUMBER_OF_IMAGES="-"
 KEY_NAME="-"
 TOGGLE="-"
+IMAGE_PATH="-"
 
 if [[ $# -eq 0 ]]
 then
@@ -379,6 +446,35 @@ while [[ $# -gt 0 ]]; do
       fi
       shift 2
       ;;
+    --remote)
+			if [ -z "${2}" ]
+			then
+				echo "ERROR: (--remote) Target not defined."
+				exit 1
+			else
+				UNIQUE_NAME=${2}
+	      IMAGE_PATH="./images"
+	      TOGGLE="remote"
+    	fi
+    	shift 2
+   	 	;;
+  	--local)
+	    if [ -z "${2}" ]
+	    then
+	      echo "ERROR: (--local) Path not defined."
+	      exit 1
+	    else
+	      if [ -d ${2} ]
+	      then
+	        IMAGE_PATH=${2}
+	        TOGGLE="local"
+	      else
+	        echo "ERROR: Path: ${2} does not exist."
+	        exit 1
+	      fi
+	    fi
+	    shift 2
+	    ;;
 		*)
 			echo "FATAL: Unknown command-line argument or enviroment: ${1}"
 			exit 1
@@ -386,24 +482,37 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-#check that all neede variables set
-validation $KEY_NAME $UNIQUE_NAME
+
 
 if [ "$TOGGLE" == "start" ]
 then
+	validation $KEY_NAME $UNIQUE_NAME
 	setup $UNIQUE_NAME $TIME_INTERVAL $NUMBER_OF_IMAGES $KEY_NAME
 
 elif [ "$TOGGLE" == "view" ]
 then
+	validation $KEY_NAME $UNIQUE_NAME
 	get_static_image $UNIQUE_NAME $KEY_NAME
 
 elif [ "$TOGGLE" == "status" ]
 then
+	validation $KEY_NAME $UNIQUE_NAME
 	get_update $UNIQUE_NAME $KEY_NAME
 
 elif [ "$TOGGLE" == "cancel" ]
 then
+	validation $KEY_NAME $UNIQUE_NAME
 	cancel_running_lapse $UNIQUE_NAME $KEY_NAME
+
+elif [ "$TOGGLE" == "remote" ]
+then
+	validation $KEY_NAME $UNIQUE_NAME
+	fetch_images $UNIQUE_NAME $KEY_NAME
+	render $IMAGE_PATH
+
+elif [ "$TOGGLE" == "local" ]
+then
+	render $IMAGE_PATH
 
 else
 	echo "FATAL: No mode selected."
