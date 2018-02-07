@@ -4,14 +4,19 @@ function usage() {
 	echo "Usage: $(basename ${0}) --[ viewtest {unique name}"
 	echo "                          | start {unique name} {time interval} {number of images}"
 	echo "                          | status {unique name}"
-	echo "                          | cancel {unique name}]"
+	echo "                          | cancel {unique name}"
+	echo "                          | remote {unique name}]"
 	echo "                            --key {ssh key name}"
+	echo "                          | local {folder}"
 	echo "                          	--help"
 	echo ""
-	echo "   Examples:   $(basename ${0}) --viewtest maleficent --key my-private-key"
+	echo "               Examples:"
 	echo "               $(basename ${0}) --key my-private-key --start maleficent 5 2000"
 	echo "               $(basename ${0}) --i my-private-key --status maleficent"
+	echo "               $(basename ${0}) --local folder_of_images"
 	echo ""
+	echo ""
+	echo "    Camera interface controls:"
 	echo " --viewtest           - Get a single image from the remote camera to test the view."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo " --start       -s     - Start the timelapse camera."
@@ -23,6 +28,14 @@ function usage() {
 	echo " --cancel             - Cancels a running time lapse, the images that have already been taken are not removed."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo ""
+	echo "        Render controls:"
+	echo " --remote             - Fetch timelapse images from Raspberry Pi."
+  echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
+  echo "                        Assumes that the remote path is ~/TimeLapse_images/"
+  echo "                        Saves images to ./images/ in same working directory."
+  echo " --local              - Use locally stored timelapse images."
+  echo "                        'folder' is the name of the local folder (path from same working directory) to get images from."
+	echo ""
 	echo " --key       -k/-i    - Provides the ssh key for the connection."
 	echo ""
 	echo " --help        -h     - This page."
@@ -31,29 +44,6 @@ function usage() {
 }
 
 function load_ani() {
-	#echo -ne "[>.........]   0%"\\r
-	#sleep 0.5
-	#echo -ne "[=>........]  10%"\\r
-	#sleep 0.5
-	#echo -ne "[==>.......]  20%"\\r
-	#sleep 0.5
-	#echo -ne "[===>......]  30%"\\r
-	#sleep 0.5
-	#echo -ne "[====>.....]  40%"\\r
-	#sleep 0.5
-	#echo -ne "[=====>....]  50%"\\r
-	#sleep 0.5
-	#echo -ne "[======>...]  60%"\\r
-	#sleep 0.5
-	#echo -ne "[=======>..]  70%"\\r
-	#sleep 0.5
-	#echo -ne "[========>.]  80%"\\r
-	#sleep 0.5
-	#echo -ne "[=========>]  90%"\\r
-	#sleep 0.5
-	#echo -ne "[==========] 100%"\\r
-	#echo ""
-
 	per=100
 	lstring="="
 	load=""
