@@ -22,6 +22,14 @@ function usage() {
 
 function fetch_images() {
   echo "INFO: Fetch images function called with target: $1  ssh key: $2"
+  FOLDER_EXIST=$(ssh -i ./bin/$2 pi@raspberrypi-$1 'if [ -d TimeLapse_images ]; then echo "y"; fi')
+  NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+
+  if [ ! "$FOLDER_EXIST" == "y" ] || [ "$NUMBER" == "0" ]
+  then
+    echo "ERROR: No files exist on target."
+    exit 1
+  fi
 
   scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images ./images
 
@@ -53,7 +61,12 @@ function render() {
 
   #Does the user want to clean up afterwards
   read -p "OPTION: Do you want to remove ALL files in the image directory after render complete? y/n: " remove_option
-  read -p "OPTION: What framerate do you want in the output video? : " fps 
+  read -p "OPTION: What framerate do you want in the output video? (Leave blank for 20): " fps 
+
+  if [ "$fps" == "" ]
+  then
+    fps="20"
+  fi
 
   #Render
   ./ffmpeg -r $fps -start_number 0001 -i $1/%04d.jpeg -s 1920x1080 -vcodec libx264 video.mp4

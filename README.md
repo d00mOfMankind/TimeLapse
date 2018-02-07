@@ -1,3 +1,24 @@
+# RenderTimeLapse
+- run RenderTimeLapse.sh --help for the usage instructions
+- requires ffmpeg binary to be placed in the same location to render
+- Can download ffmpeg binary here > http://ffbinaries.com/downloads
+- renders at 1920x1080
+- variable framerate
+- can download files from pi and render
+- can render from local files
+
+
+
+
+
+# TimeLapseSetup.sh
+- run TimeLapseSetup.sh --help for the usage instructions
+- control script
+
+
+
+
+
 # lapse.py
 - run 'python lapse.py [arg1] [arg2]'
 - arg1 being the time interval between images

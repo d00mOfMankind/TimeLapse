@@ -13,8 +13,8 @@ if os.path.isfile("timelapse_output.txt"):
 if os.path.isfile("timelapse_status.txt"):
 	os.remove("timelapse_status.txt")
 
-outputFile = open("timelapse_status.txt", "a")
-outputFile.write("\n====--------||--------====\n    Program is running.\n====--------||--------====\nfin")
+outputFile = open("timelapse_status.txt", "w")
+outputFile.write("    ====--------||--------====\n    Program is running.\n    ====--------||--------====\n")
 outputFile.close()
 
 outputFile = open("timelapse_output.txt", "a")
@@ -25,12 +25,12 @@ try:
 	ti = float(sys.argv[1])
 	number = float(sys.argv[2])
 except ValueError:
-	print("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
-	outputFile.write("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	#print("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	outputFile.write("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture\n")
 	exit()
 except IndexError:
-	print("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
-	outputFile.write("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	#print("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	outputFile.write("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture\n")
 	exit()
 	
 ti = int(ti) #remove decimal
@@ -83,9 +83,9 @@ while True:
 
 
 outputFile = open("timelapse_output.txt", "a")
-outputFile.write("\nfin")
+outputFile.write("fin\n")
 outputFile.close()
 
-outputFile = open("timelapse_status.txt", "a")
-outputFile.write("\n====--------||--------====\nProgram has now completed.\n====--------||--------====\nfin")
+outputFile = open("timelapse_status.txt", "w")
+outputFile.write("    ====--------||--------====\n    Program completed at " + str(datetime.datetime.now()) + "\n    ====--------||--------====\n")
 outputFile.close()

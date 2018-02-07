@@ -12,15 +12,15 @@ function usage() {
 	echo "               $(basename ${0}) --key my-private-key --start maleficent 5 2000"
 	echo "               $(basename ${0}) --i my-private-key --status maleficent"
 	echo ""
-	echo " --viewtest    -v     - Get a single image from the remote camera to test the view."
+	echo " --viewtest           - Get a single image from the remote camera to test the view."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-	echo " --start       -S     - Start the timelapse camera."
+	echo " --start       -s     - Start the timelapse camera."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo "                        'time interval' refers to the time the camera will wait between images."
 	echo "                        'number of images' refers to the number of images that you want the camera to take."
-	echo " --status      -s     - Prints the status of the Raspberry Pi time lapse server."
+	echo " --status             - Prints the status of the Raspberry Pi time lapse server."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
-	echo " --cancel      -c     - Cancels a running time lapse, the images that have already been taken are not removed."
+	echo " --cancel             - Cancels a running time lapse, the images that have already been taken are not removed."
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo ""
 	echo " --key       -k/-i    - Provides the ssh key for the connection."
@@ -31,27 +31,49 @@ function usage() {
 }
 
 function load_ani() {
-	echo -ne "[>.........]   0%"\\r
-	sleep 0.5
-	echo -ne "[=>........]  10%"\\r
-	sleep 0.5
-	echo -ne "[==>.......]  20%"\\r
-	sleep 0.5
-	echo -ne "[===>......]  30%"\\r
-	sleep 0.5
-	echo -ne "[====>.....]  40%"\\r
-	sleep 0.5
-	echo -ne "[=====>....]  50%"\\r
-	sleep 0.5
-	echo -ne "[======>...]  60%"\\r
-	sleep 0.5
-	echo -ne "[=======>..]  70%"\\r
-	sleep 0.5
-	echo -ne "[========>.]  80%"\\r
-	sleep 0.5
-	echo -ne "[=========>]  90%"\\r
-	sleep 0.5
-	echo -ne "[==========] 100%"\\r
+	#echo -ne "[>.........]   0%"\\r
+	#sleep 0.5
+	#echo -ne "[=>........]  10%"\\r
+	#sleep 0.5
+	#echo -ne "[==>.......]  20%"\\r
+	#sleep 0.5
+	#echo -ne "[===>......]  30%"\\r
+	#sleep 0.5
+	#echo -ne "[====>.....]  40%"\\r
+	#sleep 0.5
+	#echo -ne "[=====>....]  50%"\\r
+	#sleep 0.5
+	#echo -ne "[======>...]  60%"\\r
+	#sleep 0.5
+	#echo -ne "[=======>..]  70%"\\r
+	#sleep 0.5
+	#echo -ne "[========>.]  80%"\\r
+	#sleep 0.5
+	#echo -ne "[=========>]  90%"\\r
+	#sleep 0.5
+	#echo -ne "[==========] 100%"\\r
+	#echo ""
+
+	per=100
+	lstring="="
+	load=""
+	point=">"
+	dot="."
+	dots=""
+
+	while [ $per -ge 1 ]; do
+		dots=$dots$dot
+		per=$((per-1))
+	done
+
+	while [ $per -le 100 ]; do
+		echo -ne "[$load$point$dots] $per %" \\r
+		load=$load$lstring
+		dots=${dots%?}
+		per=$((per+1))
+		sleep 0.05
+	done
+
 	echo ""
 
 }
@@ -62,6 +84,8 @@ function validation() {
 	echo "Hostname: $host"
 	key=$1
 	echo "ssh key : $key"
+
+	echo ""
 
 	#key name check
 	if [ "$key" == "-" ]
@@ -81,6 +105,8 @@ function validation() {
 		echo "INFO: Host raspberrypi-$host online."
 	fi
 
+	echo ""
+
 	#connection test
 	extcode=$(ssh -i ./bin/$key pi@raspberrypi-$host echo "ssh connection test")
 	if [ "$extcode" == "ssh connection test" ]
@@ -90,33 +116,73 @@ function validation() {
 	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$host"
 	  echo "     : Most probable cause, wrong ssh key used."
 	  echo "     : Make sure your key is in ./bin"
+	  exit 1
 	fi
+
+	echo ""
+
 }
 
 function get_static_image() {
 	echo "INFO: Take test picture function called with target: $1  ssh key: $2"
-
+	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
+	ssh -i ./bin/$2 pi@raspberrypi-$1 raspistill -t 1 -o testimg.jpeg -n -w 1920 -h 1080
+	load_ani
+	echo "STATUS: Downloading image."
+	scp -i ./bin/$2 pi@raspberrypi-$1:~/testimg.jpeg ./testimg.jpeg
+	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
 	
 
 }
 
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
-
 	
+	EXIST=$(ssh -i ./bin/$2 pi@raspberrypi-$1 'if [ -f timelapse_status.txt ]; then echo "y"; fi')
 
+	if [ ! "$EXIST" == "y" ]
+	then
+		echo -e "    ====--------||--------====\n    Program not yet started.\n    ====--------||--------===="
+	else
+		ssh -i ./bin/$2 pi@raspberrypi-$1 cat timelapse_status.txt
+	fi
 
 }
 
 function cancel_running_lapse() {
 	echo "INFO: Cancel running time lapse called with target: $1  ssh key: $2"
 
-	
+	RUNNING=$(ssh -i ./bin/$2 pi@raspberrypi-$1 pidof python)
+	echo "$RUNNING"
+	if [ ! "$RUNNING" == "" ]
+	then
+		NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+		echo "STATUS: Downloading output file..."
+		scp -i ./bin/$2 pi@raspberrypi-$1:timelapse_output.txt ./bin/output.txt
 
+		echo ""
+		cat ./bin/output.txt
+		echo ""
+		echo "$NUMBER images have already been taken (and will not be deleted if you halt)."
+		read -p "OPTION: Are you sure you want to halt the timelapse? y/n: " halt_option
+
+		if [ "$halt_option" == "y" ] || [ "$halt_option" == "Y" ] || [ "$halt_option" == "yes" ] || [ "$halt_option" == "Yes" ]
+		then
+			ssh -i ./bin/$2 pi@raspberrypi-$1 'killall -w python; rm timelapse_status.txt'
+		fi
+	else
+		echo "INFO: Timelapse is not running, therefore cannot be halted."
+	fi
+
+	echo ""
+	echo "INFO: python process successfully killed on target $1"
+	echo "INFO: Timelapse halted."
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+	echo "INFO: $NUMBER images remain on device."
 }
 
 function image_removal(){
-	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 $HOME/TimeLapse_images | wc -l)
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
 
 	#if there are images
 	if ! [ $NUMBER -eq 0 ]
@@ -130,7 +196,7 @@ function image_removal(){
 			exit 1
 		fi
 		#remove all files
-		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $HOME/TimeLapse_images/*
+		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $3/TimeLapse_images/*
 	fi
 }
 
@@ -183,14 +249,14 @@ function setup(){
 	if [ "$FOLDER_STATUS" == "both" ]
 	then
 		echo "STATUS: All folder exist status. Continuing..."
-		image_removal $1 $4
+		image_removal $1 $4 $HOME
 
 	#if only image folder exists
 	elif [ "$FOLDER_STATUS" == "image" ]
 	then
 	echo "STATUS: $TIMELAPSE not found on $1. Creating..."
 	ssh -i ./bin/$4 pi@raspberrypi-$1 mkdir $HOME/TimeLapse
-	image_removal $1 $4
+	image_removal $1 $4 $HOME
 
 
 	#if only main folder exists
@@ -211,6 +277,7 @@ function setup(){
 	fi
 
 	#copy lapse.py to server
+	echo "STATUS: Uploading camera control file..."
 	scp -i ./bin/$4 ./bin/lapse.py pi@raspberrypi-$1:$TIMELAPSE/lapse.py
 
 	#ssh -i ./bin/$4 pi@raspberrypi-$1 ls "$TIMELAPSE"
@@ -228,8 +295,10 @@ function setup(){
 	fi
 
 	load_ani
+	echo "STATUS: Downloading output file..."
 	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/timelapse_output.txt ./bin/output.txt
 
+	echo ""
 	cat ./bin/output.txt
 
 
@@ -245,7 +314,6 @@ TOGGLE="-"
 if [[ $# -eq 0 ]]
 then
   usage
-  exit 1
 fi
 
 while [[ $# -gt 0 ]]; do
@@ -253,7 +321,7 @@ while [[ $# -gt 0 ]]; do
 	  -h|--help)
 			usage
 			;;
-		--viewtest|-v)
+		--viewtest)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 			  echo "ERROR: (--viewtest) Target not defined."
@@ -264,7 +332,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--cancel|-c)
+		--cancel)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--cancel) Target not defined."
@@ -275,7 +343,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--status|-s)
+		--status)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--status) Target not defined."
@@ -286,7 +354,7 @@ while [[ $# -gt 0 ]]; do
 			fi
 			shift 2
 			;;
-		--start|-S)
+		--start|-s)
 			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--start) Target not defined."
@@ -334,15 +402,19 @@ validation $KEY_NAME $UNIQUE_NAME
 if [ "$TOGGLE" == "start" ]
 then
 	setup $UNIQUE_NAME $TIME_INTERVAL $NUMBER_OF_IMAGES $KEY_NAME
+
 elif [ "$TOGGLE" == "view" ]
 then
 	get_static_image $UNIQUE_NAME $KEY_NAME
+
 elif [ "$TOGGLE" == "status" ]
 then
 	get_update $UNIQUE_NAME $KEY_NAME
+
 elif [ "$TOGGLE" == "cancel" ]
 then
 	cancel_running_lapse $UNIQUE_NAME $KEY_NAME
+
 else
 	echo "FATAL: No mode selected."
 	usage
