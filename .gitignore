@@ -4,3 +4,4 @@ images/*
 video.mp4
 pi-ssh-key
 bin/output.txt
+*.zip
