@@ -25,12 +25,12 @@ try:
 	ti = float(sys.argv[1])
 	number = float(sys.argv[2])
 except ValueError:
-	print("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
-	outputFile.write("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	#print("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	outputFile.write("ERROR: Enter integers for both arguments.\narg 1 = time interval\narg 2 = number of images to capture\n")
 	exit()
 except IndexError:
-	print("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
-	outputFile.write("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	#print("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture")
+	outputFile.write("ERROR: Must enter a value for both arguments.\narg 1 = time interval\narg 2 = number of images to capture\n")
 	exit()
 	
 ti = int(ti) #remove decimal

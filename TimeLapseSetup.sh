@@ -112,6 +112,7 @@ function validation() {
 	  echo "ERROR: Unable to establish ssh connection to raspberrypi-$host"
 	  echo "     : Most probable cause, wrong ssh key used."
 	  echo "     : Make sure your key is in ./bin"
+	  exit 1
 	fi
 }
 
@@ -129,30 +130,15 @@ function get_static_image() {
 
 function get_update() {
 	echo "INFO: Get update called with target: $1  ssh key: $2"
+	
+	EXIST=$(ssh -i ./bin/pi-ssh-key pi@raspberrypi-bane 'if [ -f timelapse_status.txt ]; then echo "y"; fi')
 
-	if [ -f ./bin/check.sh ]
+	if [ ! "$EXIST" == "y" ]
 	then
-		rm ./bin/check.sh
-	fi
-
-	touch ./bin/check.sh
-
-	echo "#!/usr/bin/env bash
-	if [ -f timelapse_status.txt ]
-	then
-		cat timelapse_status.txt
+		echo -e "    ====--------||--------====\n    Program not yet started.\n    ====--------||--------===="
 	else
-		echo \"
-		====--------||--------====
-    Program not yet started.
-    ====--------||--------====\" >> timelapse_status.txt
-		cat timelapse_status.txt
+		ssh -i ./bin/$2 pi@raspberrypi-$1 cat timelapse_status.txt
 	fi
-	" >> ./bin/check.sh
-
-	ssh -i ./bin/$2 pi@raspberrypi-$1 'bash -s' < ./bin/check.sh
-
-	rm ./bin/check.sh
 
 }
 
@@ -281,6 +267,7 @@ function setup(){
 	echo "STATUS: Downloading output file..."
 	scp -i ./bin/$4 pi@raspberrypi-$1:$HOME/timelapse_output.txt ./bin/output.txt
 
+	echo ""
 	cat ./bin/output.txt
 
 
@@ -296,7 +283,6 @@ TOGGLE="-"
 if [[ $# -eq 0 ]]
 then
   usage
-  exit 1
 fi
 
 while [[ $# -gt 0 ]]; do
@@ -385,15 +371,19 @@ validation $KEY_NAME $UNIQUE_NAME
 if [ "$TOGGLE" == "start" ]
 then
 	setup $UNIQUE_NAME $TIME_INTERVAL $NUMBER_OF_IMAGES $KEY_NAME
+
 elif [ "$TOGGLE" == "view" ]
 then
 	get_static_image $UNIQUE_NAME $KEY_NAME
+
 elif [ "$TOGGLE" == "status" ]
 then
 	get_update $UNIQUE_NAME $KEY_NAME
+
 elif [ "$TOGGLE" == "cancel" ]
 then
 	cancel_running_lapse $UNIQUE_NAME $KEY_NAME
+
 else
 	echo "FATAL: No mode selected."
 	usage
