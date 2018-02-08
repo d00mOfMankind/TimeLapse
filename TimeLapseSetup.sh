@@ -5,7 +5,8 @@ function usage() {
 	echo "                          | start {unique name} {time interval} {number of images}"
 	echo "                          | status {unique name}"
 	echo "                          | cancel {unique name}"
-	echo "                          | remote {unique name}]"
+	echo "                          | remote {unique name}"
+	echo "                          | fetch {unique name}]"
 	echo "                            --key {ssh key name}"
 	echo "                          | local {folder}"
 	echo "                          	--help"
@@ -29,7 +30,7 @@ function usage() {
 	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo ""
 	echo "        Render controls:"
-	echo " --remote             - Fetch timelapse images from Raspberry Pi."
+	echo " --remote             - Fetch timelapse images from Raspberry Pi, then render them."
   echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
   echo "                        Assumes that the remote path is ~/TimeLapse_images/"
   echo "                        Saves images to ./images/ in same working directory."
@@ -39,6 +40,11 @@ function usage() {
 	echo " --key       -k/-i    - Provides the ssh key for the connection."
 	echo ""
 	echo " --help        -h     - This page."
+	echo ""
+	echo " --fetch              - Fetch timelapse images form Raspberry Pi, and save to folder."
+	echo "                        Saves to folder ./images and will overwrite any images in ./images"
+	echo "                        to prevent this rename the folder to something else. --fetch will create a new folder called ./images to save too."
+	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
 	echo ""
 	echo ""
 	echo " Hint."
@@ -89,9 +95,8 @@ function validation() {
 	fi
 
 	#hostname ping test
-	extcode=$(ping -c 1 raspberrypi-$host)
-	echo "$extcode"
-	if [ "$extcode" == "0" ] || [ "$extcode" == "" ]
+	ping -c 1 raspberrypi-$host > /dev/null 2>&1
+	if [ $? -ne 0 ]
 	then
 		echo "ERROR: Host raspberrypi-$host unreachable/offline."
 		exit 1
@@ -126,7 +131,6 @@ function get_static_image() {
 	scp -i ./bin/$2 pi@raspberrypi-$1:~/testimg.jpeg ./testimg.jpeg
 	ssh -i ./bin/$2 pi@raspberrypi-$1 rm testimg.jpeg
 	
-
 }
 
 function get_update() {
@@ -140,6 +144,10 @@ function get_update() {
 	else
 		ssh -i ./bin/$2 pi@raspberrypi-$1 cat timelapse_status.txt
 	fi
+
+	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+
+	echo "INFO: There are $NUMBER images currently on host $1"
 
 }
 
@@ -173,6 +181,7 @@ function cancel_running_lapse() {
 	echo "INFO: Timelapse halted."
 	NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
 	echo "INFO: $NUMBER images remain on device."
+
 }
 
 function image_removal(){
@@ -192,6 +201,7 @@ function image_removal(){
 		#remove all files
 		ssh -i ./bin/$2 pi@raspberrypi-$1 rm $3/TimeLapse_images/*
 	fi
+
 }
 
 function setup(){
@@ -295,7 +305,6 @@ function setup(){
 	echo ""
 	cat ./bin/output.txt
 
-
 }
 
 function fetch_images() {
@@ -309,7 +318,24 @@ function fetch_images() {
     exit 1
   fi
 
-  scp -i ./bin/$2 -r pi@raspberrypi-$1:~/TimeLapse_images ./images
+  if [ -d images ]
+  then
+  	echo "INFO: Default images folder exists."
+  	echo "    : Continuing with this download will remove all currently stored images in ./images."
+  	read -p "OPTION: Do you want to continue with this download? y/n: " rmimages
+
+  	if [ "$rmimages" == "y" ] || [ "$rmimages" == "Y" ] || [ "$rmimages" == "yes" ] || [ "$rmimages" == "Yes" ]
+  	then
+			echo "STATUS: Removing local ./images..."
+			rm -r images || exit 1
+		else
+			echo "STATUS: Cancelling download..."
+			exit 1
+		fi
+  fi
+
+  echo "STATUS: Saving images to folder ./images ..."
+  scp -r -i ./bin/$2 pi@raspberrypi-$1:~/TimeLapse_images ./images
 
 }
 
@@ -475,6 +501,17 @@ while [[ $# -gt 0 ]]; do
 	    fi
 	    shift 2
 	    ;;
+	  --fetch)
+			if [ -z "${2}" ]
+			then
+				echo "ERROR: (--fetch) Target not defined."
+				exit 1
+			else
+				UNIQUE_NAME=${2}
+				TOGGLE="fetch"
+			fi
+			shift 2
+			;;
 		*)
 			echo "FATAL: Unknown command-line argument or enviroment: ${1}"
 			exit 1
@@ -513,6 +550,11 @@ then
 elif [ "$TOGGLE" == "local" ]
 then
 	render $IMAGE_PATH
+
+elif [ "$TOGGLE" == "fetch" ]
+then
+	validation $KEY_NAME $UNIQUE_NAME
+	fetch_images $UNIQUE_NAME $KEY_NAME
 
 else
 	echo "FATAL: No mode selected."
