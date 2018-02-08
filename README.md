@@ -41,3 +41,12 @@
 - look in output.txt to see
 - also a good idea to look in the tl/ folder to check that images are being created
 
+
+# Unix vs Dos line endings
+## If you get an error like this
+## TimeLapseSetup.sh: line 2: $'\r': command not found
+## run these commands (linux)
+- sudo apt install dos2unix
+- dos2unix TimeLapseSetup.sh
+
+## The problem was that git has converted the line endings to crlf ranther than unix style lf
