@@ -3,8 +3,9 @@
 function usage() {
   echo "Usage: $(basename ${0}) --[ remote {unique name}"
   echo "                          | fetch {unique name}"
-  echo "                          | local {path}]"
+  echo "                          | status {unique name}]"
   echo "                            --key {ssh key name}"
+  echo "                          | local {path}"
   echo "                            --help"
   echo ""
   echo "   Examples:   $(basename ${0}) --fetch maleficent --key my-private-key"
@@ -20,6 +21,8 @@ function usage() {
   echo " --fetch              - Fetch timelapse images form Raspberry Pi, and save to folder."
   echo "                        Saves to folder ./images and will overwrite any images in ./images"
   echo "                        to prevent this rename the folder to something else. --fetch will create a new folder called ./images to save too."
+  echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
+  echo " --status             - Prints the status of the Raspberry Pi time lapse server."
   echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
   echo ""
   echo " --key       -k/-i    - Provides the ssh key for the connection."
@@ -153,6 +156,24 @@ function render() {
 
 }
 
+function get_update() {
+  echo "INFO: Get update called with target: $1  ssh key: $2"
+  
+  EXIST=$(ssh -i ./bin/$2 pi@raspberrypi-$1 'if [ -f timelapse_status.txt ]; then echo "y"; fi')
+
+  if [ ! "$EXIST" == "y" ]
+  then
+    echo -e "    ====--------||--------====\n    Program not yet started.\n    ====--------||--------===="
+  else
+    ssh -i ./bin/$2 pi@raspberrypi-$1 cat timelapse_status.txt
+  fi
+
+  NUMBER=$(ssh -i ./bin/$2 pi@raspberrypi-$1 ls -1 TimeLapse_images | wc -l)
+
+  echo "INFO: There are $NUMBER images currently on host $1"
+
+}
+
 IMAGE_PATH="-"
 UNIQUE_NAME="-"
 KEY_NAME="-"
@@ -197,6 +218,17 @@ while [[ $# -gt 0 ]]; do
       fi
       shift 2
       ;;
+    --status)
+      if [ -z "${2}" ] || [[ "${2}" == -* ]]
+      then
+        echo "ERROR: (--status) Target not defined."
+        exit 1
+      else
+        UNIQUE_NAME=${2}
+        TOGGLE="status"
+      fi
+      shift 2
+      ;;
     --fetch)
       if [ -z "${2}" ] || [[ "${2}" == -* ]]
       then
@@ -238,6 +270,11 @@ then
 elif [ "$TOGGLE" == "local" ]
 then
   render $IMAGE_PATH
+
+elif [ "$TOGGLE" == "status" ]
+then
+  validation $KEY_NAME $UNIQUE_NAME
+  get_update $UNIQUE_NAME $KEY_NAME
 
 elif [ "$TOGGLE" == "fetch" ]
 then
