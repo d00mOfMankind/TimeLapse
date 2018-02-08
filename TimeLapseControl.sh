@@ -31,7 +31,7 @@ function usage() {
 	echo ""
 	echo "        Render controls:"
 	echo " --remote             - Fetch timelapse images from Raspberry Pi, then render them."
-  echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
+	echo "                        'unique name' referes to the name suffix of the Raspberry Pi."
  	echo "                        Assumes that the remote path is ~/TimeLapse_images/"
  	echo "                        Saves images to ./images/ in same working directory."
  	echo " --local              - Use locally stored timelapse images."
