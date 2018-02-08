@@ -336,6 +336,7 @@ function fetch_images() {
 
   echo "STATUS: Saving images to folder ./images ..."
   scp -r -i ./bin/$2 pi@raspberrypi-$1:~/TimeLapse_images ./images
+  echo "INFO: $NUMBER files downloaded..."
 
 }
 
@@ -473,7 +474,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --remote)
-			if [ -z "${2}" ]
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--remote) Target not defined."
 				exit 1
@@ -485,7 +486,7 @@ while [[ $# -gt 0 ]]; do
     	shift 2
    	 	;;
   	--local)
-	    if [ -z "${2}" ]
+	    if [ -z "${2}" ] || [[ "${2}" == -* ]]
 	    then
 	      echo "ERROR: (--local) Path not defined."
 	      exit 1
@@ -502,7 +503,7 @@ while [[ $# -gt 0 ]]; do
 	    shift 2
 	    ;;
 	  --fetch)
-			if [ -z "${2}" ]
+			if [ -z "${2}" ] || [[ "${2}" == -* ]]
 			then
 				echo "ERROR: (--fetch) Target not defined."
 				exit 1
