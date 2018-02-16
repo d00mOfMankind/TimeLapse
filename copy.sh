@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+cp 0001.jpeg 0002.jpeg
+cp 0001.jpeg 0003.jpeg
+cp 0001.jpeg 0004.jpeg
+cp 0001.jpeg 0005.jpeg
+cp 0001.jpeg 0006.jpeg
+cp 0001.jpeg 0007.jpeg
+cp 0001.jpeg 0008.jpeg
+cp 0001.jpeg 0009.jpeg
+cp 0001.jpeg 0010.jpeg
+cp 0001.jpeg 0011.jpeg
+cp 0001.jpeg 0012.jpeg
+cp 0001.jpeg 0013.jpeg
+cp 0001.jpeg 0014.jpeg
+cp 0001.jpeg 0015.jpeg
+cp 0001.jpeg 0016.jpeg
+cp 0001.jpeg 0017.jpeg
+cp 0001.jpeg 0018.jpeg
+cp 0001.jpeg 0019.jpeg
+cp 0001.jpeg 0020.jpeg
+cp 0001.jpeg 0021.jpeg
+cp 0001.jpeg 0022.jpeg
+cp 0001.jpeg 0023.jpeg
+cp 0001.jpeg 0024.jpeg
+cp 0001.jpeg 0025.jpeg
+cp 0001.jpeg 0026.jpeg
+cp 0001.jpeg 0027.jpeg
+cp 0001.jpeg 0028.jpeg
+cp 0001.jpeg 0029.jpeg
+cp 0001.jpeg 0030.jpeg
